@@ -1,0 +1,9 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+.bg-hero {
+    background-image: url('./assets/hero3.webp');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+}
