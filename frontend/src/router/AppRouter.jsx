@@ -7,10 +7,11 @@ import { Register } from '../pages/Register';
 import { Services } from '../pages/Services';
 import { LogIn } from '../pages/LogIn';
 import{Departments} from '../pages/Departments';
-import {DoctorProfile} from"../pages/DoctorProfile";
+import {DoctorProfile} from"../components/doctor/DoctorProfile";
 import { UserAccount } from "../components/userSettings/UserAccount";
 import {UserSettings} from"../components/userSettings/UserSettings";
-
+import { Appoinment } from "../pages/Appointment";
+import {DepartmentProfile} from "../components/department/DepartmentProfile";
 export const router = createBrowserRouter([
     {
       path: '/',
@@ -50,6 +51,10 @@ export const router = createBrowserRouter([
           element: <Departments/>
         },
         {
+          path: 'departments/:id',
+          element: <DepartmentProfile/>
+        },
+        {
           path: 'userSettings',
           element: <UserSettings/>
         },
@@ -59,6 +64,9 @@ export const router = createBrowserRouter([
         },{
           path: 'doctor/:id',
           element: <DoctorProfile/>
+        },{
+          path: 'appoinment/:id',
+          element: <Appoinment/>
         }
       ],
     }

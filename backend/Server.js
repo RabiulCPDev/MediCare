@@ -14,7 +14,8 @@ const port = 5000;
 const cors = require('cors');
 const bcrypt = require('bcrypt');
 const Authentication = require('./middleware/Authentication');
-const doctorModel = require('./model/doctorModel')
+const doctorModel = require('./model/doctorModel');
+const departmentModel = require('./model/departmentModel');
 
 
 app.use(express.json());
@@ -154,7 +155,6 @@ app.get('/',(req,res)=>{
 
 app.get('/api/doctors',async(req,res)=>{
     try{
-        console.log("hit");
         const doctors = await doctorModel.find();
         console.log(doctors)
         res.status(200).json(doctors);
@@ -163,6 +163,15 @@ app.get('/api/doctors',async(req,res)=>{
     }
 })
 
+app.get('/api/departments',async(req,res)=>{
+    try{
+        const department = await departmentModel.find();
+        console.log(department)
+        res.status(200).json(department);
+    }catch(error){
+        res.status(500).json({message:"No department found",error});
+    }
+})
 
 
 app.post('/api/admin/createDoctor',(req,res)=>{
