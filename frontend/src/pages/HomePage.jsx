@@ -4,6 +4,8 @@ import { ServiceGrid } from "../components/Services/ServiceGrid";
 import { Hero } from "../components/hero/Hero";
 import  FileUpload  from '../components/fileUpload/FileUpload'
 import {Footer} from '../components/footer/Footer';
+import { DepartmentGrid } from "../components/department/DepartmentGrid";
+import { DoctorGrid } from "../components/doctor/DoctorGrid";
 export const HomePage = () => {
   const location = useLocation();
   return (
@@ -20,8 +22,23 @@ export const HomePage = () => {
           <div className=" bg-purple-50 ">
             <ServiceGrid />
           </div>
+
+          <h1 className=" text-center text-4xl font-semibold text-blue-500 ">
+            Our Departments
+          </h1>
+          <div className=" bg-purple-50 ">
+            <DepartmentGrid />
+          </div>
+
+          <h1 className=" text-center text-4xl font-semibold text-blue-500 ">
+            Our Specialists
+          </h1>
+          <div className=" bg-purple-50 ">
+            <DoctorGrid />
+          </div>
+
+
         </div>
-        <FileUpload/>
         </>
         
       ):(
