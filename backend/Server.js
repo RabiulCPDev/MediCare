@@ -10,6 +10,7 @@ const CreateUser = require('./user/createUser');
 const CreateService = require('./admin/createService');
 const CreateDepartment = require('./admin/createDepartment');
 const userModel = require('./model/userModel');
+const serviceModel = require('./model/serviceModel')
 const port = 5000;
 const cors = require('cors');
 const bcrypt = require('bcrypt');
@@ -170,6 +171,17 @@ app.get('/api/departments',async(req,res)=>{
         res.status(200).json(department);
     }catch(error){
         res.status(500).json({message:"No department found",error});
+    }
+})
+
+app.get('/api/services',async(req,res)=>{
+    try{
+        const services = await serviceModel.find();
+        console.log(services)
+        res.status(200).json(services);
+    }catch(error){
+        console.log("error in service route")
+        res.status(500).json({message:"No service found",error});
     }
 })
 

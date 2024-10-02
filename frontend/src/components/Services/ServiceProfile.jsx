@@ -1,29 +1,31 @@
 import { useLocation } from "react-router-dom";
 
-export const DepartmentProfile = () => {
+export const ServiceProfile = () => {
     const location = useLocation();
-    const { departments } = location.state || {};
-
+    const { services } = location.state || {};
     return (
         <div className="flex flex-col items-center">
-            {departments ? ( 
+            {services ? ( 
                 <>
                     <h1 className="text-center m-1 p-4 text-4xl">
-                        Welcome to {departments.name} department
+                        Welcome to {services.name} Service
                     </h1>
                     <div className="rounded-xl border-blue-500 max-w-md">
                         <img 
-                            src={departments.url} 
+                            src={services.url} 
                             className="w-full rounded-xl" 
-                            alt={`${departments.name} departments`}
+                            alt={`${services.name} services`}
                         />
                     </div>
                     <div className="p-4">
-                        <h1 className="text-3xl text-justify">{departments.description}</h1>
+                        <h1 className="text-3xl text-justify">{services.name}</h1>
+                    </div>
+                    <div className="p-4">
+                        <h1 className="text-3xl text-justify">{services.description}</h1>
                     </div>
                 </>
             ) : (
-                <h1 className="text-center text-2xl">Departments data not found.</h1>
+                <h1 className="text-center text-2xl">Service data not found.</h1>
             )}
         </div>
     );

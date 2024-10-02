@@ -12,6 +12,7 @@ import { UserAccount } from "../components/userSettings/UserAccount";
 import {UserSettings} from"../components/userSettings/UserSettings";
 import { Appoinment } from "../pages/Appointment";
 import {DepartmentProfile} from "../components/department/DepartmentProfile";
+import { ServiceProfile } from "../components/Services/ServiceProfile";
 export const router = createBrowserRouter([
     {
       path: '/',
@@ -37,6 +38,10 @@ export const router = createBrowserRouter([
         {
           path:'services',
           element: <Services/>
+        },
+        {
+          path:'services/:id',
+          element: <ServiceProfile/>
         },
         {
           path: 'register',

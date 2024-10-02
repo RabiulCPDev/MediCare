@@ -85,8 +85,6 @@ export const Hero = () => {
             <FontAwesomeIcon icon={faCircleInfo} style={{fontSize:40, margin:3}} />
              <span className='m-2'> Information </span>
               </a>
-
-
             </div>
 
 

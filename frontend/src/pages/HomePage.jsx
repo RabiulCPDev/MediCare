@@ -3,7 +3,7 @@ import { NavBar } from "../components/NavBar/NavBar";
 import { ServiceGrid } from "../components/Services/ServiceGrid";
 import { Hero } from "../components/hero/Hero";
 import  FileUpload  from '../components/fileUpload/FileUpload'
-
+import {Footer} from '../components/footer/Footer';
 export const HomePage = () => {
   const location = useLocation();
   return (
@@ -29,7 +29,7 @@ export const HomePage = () => {
       )}
 
       <div className=" bg-black h-40 w-full">
-        <h1 className=" text-white"> Footer</h1>
+       <Footer/>
       </div>
     </div>
   );
