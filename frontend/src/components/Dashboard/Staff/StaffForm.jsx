@@ -1,8 +1,8 @@
 import { useState, useEffect } from 'react';
 import axios from 'axios';
 
-const StaffForm = ({ staffId, onSuccess, onCancel }) => {
-    const [staffData, setStaffData] = useState({
+const StaffForm = ({ staffData, onSuccess, onCancel }) => {
+    const [formData, setFormData] = useState({
         fname: '',
         lname: '',
         email: '',
@@ -15,50 +15,63 @@ const StaffForm = ({ staffId, onSuccess, onCancel }) => {
         description: '',
         url: ''
     });
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState(null);
 
     useEffect(() => {
-        if (staffId) {
-            const fetchStaff = async () => {
-                try {
-                    const response = await axios.get(`http://localhost:5000/api/admin/staffs/${staffId}`);
-                    setStaffData(response.data);
-                } catch (error) {
-                    alert('Error fetching staff data.');
-                }
-            };
-            fetchStaff();
+        if (staffData) {
+            setFormData(staffData);
+        } else {
+            setFormData({
+                fname: '',
+                lname: '',
+                email: '',
+                phone: '',
+                gender: '',
+                role: '',
+                department: '',
+                employee_id: '',
+                address: '',
+                description: '',
+                url: ''
+            }); // Reset form for new staff creation
         }
-    }, [staffId]);
+    }, [staffData]);
 
     const handleChange = (e) => {
         const { id, value } = e.target;
-        setStaffData({ ...staffData, [id]: value });
+        setFormData({ ...formData, [id]: value });
     };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+        setLoading(true);
         try {
-            if (staffId) {
-                await axios.put(`http://localhost:5000/api/admin/staffs/${staffId}`, staffData);
+            if (staffData && staffData._id) { 
+                await axios.put(`http://localhost:5000/api/admin/staffs/${staffData._id}`, formData);
                 alert('Staff member updated successfully.');
             } else {
-                await axios.post('http://localhost:5000/api/admin/staffs', staffData);
+                await axios.post('http://localhost:5000/api/admin/staffs', formData);
                 alert('Staff member created successfully.');
             }
-            onSuccess();
+            onSuccess(); // Call success handler after submission
         } catch (error) {
-            alert('Error saving staff data: ' + error.message);
+            setError('Error saving staff data: ' + error.message);
+        } finally {
+            setLoading(false);
         }
     };
 
     return (
         <form onSubmit={handleSubmit} className="space-y-4">
+            {loading && <p>Loading...</p>}
+            {error && <p className="text-red-500">{error}</p>}
             <div>
                 <label>First Name:</label>
                 <input
                     type="text"
                     id="fname"
-                    value={staffData.fname}
+                    value={formData.fname}
                     onChange={handleChange}
                     required
                     className="border rounded px-2 py-1 w-full"
@@ -69,7 +82,7 @@ const StaffForm = ({ staffId, onSuccess, onCancel }) => {
                 <input
                     type="text"
                     id="lname"
-                    value={staffData.lname}
+                    value={formData.lname}
                     onChange={handleChange}
                     className="border rounded px-2 py-1 w-full"
                 />
@@ -79,7 +92,7 @@ const StaffForm = ({ staffId, onSuccess, onCancel }) => {
                 <input
                     type="email"
                     id="email"
-                    value={staffData.email}
+                    value={formData.email}
                     onChange={handleChange}
                     required
                     className="border rounded px-2 py-1 w-full"
@@ -90,7 +103,7 @@ const StaffForm = ({ staffId, onSuccess, onCancel }) => {
                 <input
                     type="text"
                     id="phone"
-                    value={staffData.phone}
+                    value={formData.phone}
                     onChange={handleChange}
                     required
                     className="border rounded px-2 py-1 w-full"
@@ -98,20 +111,24 @@ const StaffForm = ({ staffId, onSuccess, onCancel }) => {
             </div>
             <div>
                 <label>Gender:</label>
-                <input
-                    type="text"
+                <select
                     id="gender"
-                    value={staffData.gender}
+                    value={formData.gender}
                     onChange={handleChange}
                     className="border rounded px-2 py-1 w-full"
-                />
+                >
+                    <option value="">Select Gender</option>
+                    <option value="male">Male</option>
+                    <option value="female">Female</option>
+                    <option value="other">Other</option>
+                </select>
             </div>
             <div>
                 <label>Role:</label>
                 <input
                     type="text"
                     id="role"
-                    value={staffData.role}
+                    value={formData.role}
                     onChange={handleChange}
                     required
                     className="border rounded px-2 py-1 w-full"
@@ -122,7 +139,7 @@ const StaffForm = ({ staffId, onSuccess, onCancel }) => {
                 <input
                     type="text"
                     id="department"
-                    value={staffData.department}
+                    value={formData.department}
                     onChange={handleChange}
                     className="border rounded px-2 py-1 w-full"
                 />
@@ -132,7 +149,7 @@ const StaffForm = ({ staffId, onSuccess, onCancel }) => {
                 <input
                     type="text"
                     id="employee_id"
-                    value={staffData.employee_id}
+                    value={formData.employee_id}
                     onChange={handleChange}
                     required
                     className="border rounded px-2 py-1 w-full"
@@ -143,7 +160,7 @@ const StaffForm = ({ staffId, onSuccess, onCancel }) => {
                 <input
                     type="text"
                     id="address"
-                    value={staffData.address}
+                    value={formData.address}
                     onChange={handleChange}
                     className="border rounded px-2 py-1 w-full"
                 />
@@ -152,7 +169,7 @@ const StaffForm = ({ staffId, onSuccess, onCancel }) => {
                 <label>Description:</label>
                 <textarea
                     id="description"
-                    value={staffData.description}
+                    value={formData.description}
                     onChange={handleChange}
                     className="border rounded px-2 py-1 w-full"
                 />
@@ -162,14 +179,14 @@ const StaffForm = ({ staffId, onSuccess, onCancel }) => {
                 <input
                     type="text"
                     id="url"
-                    value={staffData.url}
+                    value={formData.url}
                     onChange={handleChange}
                     className="border rounded px-2 py-1 w-full"
                 />
             </div>
             <div className="flex space-x-4">
-                <button type="submit" className="bg-blue-500 text-white px-3 py-1 rounded">
-                    {staffId ? 'Update Staff' : 'Create Staff'}
+                <button type="submit" className="bg-blue-500 text-white px-3 py-1 rounded" disabled={loading}>
+                    {staffData && staffData._id ? 'Update Staff' : 'Create Staff'}
                 </button>
                 <button type="button" onClick={onCancel} className="bg-gray-500 text-white px-3 py-1 rounded">
                     Cancel
