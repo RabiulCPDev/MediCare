@@ -17,6 +17,8 @@ const bcrypt = require('bcrypt');
 const Authentication = require('./middleware/Authentication');
 const doctorModel = require('./model/doctorModel');
 const departmentModel = require('./model/departmentModel');
+const appointmentModel = require('./model/appointmentModel');
+const staffModel = require('./model/staffModel');
 
 
 app.use(express.json());
@@ -40,7 +42,7 @@ app.get('/api/user/data', Authentication, async (req, res) => {
     try {
        
         console.log('Decoded token:', req.us);
-        const userId = req.us.id;
+        const userId = req.user.id;
 
         const user = await userModel.findById(userId).select('-password');
 
@@ -56,13 +58,74 @@ app.get('/api/user/data', Authentication, async (req, res) => {
     }
 });
 
+app.get('/api/admin/users', async (req, res) => {
+    try {
+        const users = await userModel.find();
+
+        if (!users || users.length === 0) {
+            console.log("Users not found");
+            return res.status(404).json({ message: 'Users not found' });
+        }
+        
+        res.status(200).json(users); 
+    } catch (error) {
+        console.error('Error fetching users:', error.message);
+        res.status(500).json({ message: 'Server error: ' + error.message });
+    }
+});
+
+app.get('/api/admin/staffs', async (req, res) => {
+    try {
+        const users = await staffModel.find();
+
+        if (!users || users.length === 0) {
+            console.log("Users not found");
+            return res.status(404).json({ message: 'Users not found' });
+        }
+        
+        res.status(200).json(users); 
+    } catch (error) {
+        console.error('Error fetching users:', error.message);
+        res.status(500).json({ message: 'Server error: ' + error.message });
+    }
+});
+
+app.delete('/api/admin/users/:id', async (req, res) => {
+    const userId = req.params.id;
+    try {
+        const deletedUser = await userModel.findByIdAndDelete(userId);
+        if (!deletedUser) {
+            return res.status(404).json({ message: 'User not found' });
+        }
+        res.status(200).json({ message: 'User deleted successfully' });
+    } catch (error) {
+        console.error('Error deleting user:', error.message);
+        res.status(500).json({ message: 'Server error: ' + error.message });
+    }
+});
+
+app.delete('/api/admin/staffs/:id', async (req, res) => {
+    const staffId = req.params.id;
+    try {
+        const deletedStaff = await staffModel.findByIdAndDelete(staffId);
+        if (!deletedStaff) {
+            return res.status(404).json({ message: 'Staff not found' });
+        }
+        res.status(200).json({ message: 'Staff deleted successfully' });
+    } catch (error) {
+        console.error('Error deleting staff:', error.message);
+        res.status(500).json({ message: 'Server error: ' + error.message });
+    }
+});
+
+
 app.put('/api/user/updateUser', Authentication, async (req, res) => {
     const { current_password, new_password, ...otherData } = req.body;
-    const userId = req.user.id;
+   
 
     try {
-      
-        const user = await User.findById(userId);
+        const userId = req.user.id;
+        const user = await userModel.findById(userId);
 
         if (!user) {
             return res.status(404).json({ message: 'User not found' });
@@ -164,6 +227,29 @@ app.get('/api/doctors',async(req,res)=>{
     }
 })
 
+
+app.get('/api/user/appointment',async(req,res)=>{
+    try{
+        const {app_id} =req.body;
+        const appointment=await appointmentModel.find({app_id});
+        res.status(200).json({appointment});
+    }catch(error){
+        res.status(500).json({message:"No appointment found",error});
+    }
+})
+
+app.post('/api/user/appointment',async(req,res)=>{
+    try{
+        const appointment= new appointmentModel(req.body);
+        await appointment.save();
+        res.status(200).json(appointment);
+    }catch(error){
+        res.status(500).json({message:"No appointment created",error});
+    }
+})
+
+
+
 app.get('/api/departments',async(req,res)=>{
     try{
         const department = await departmentModel.find();
@@ -219,6 +305,33 @@ app.post('/api/user/createUser',(req,res)=>{
     console.log(user);
     res.status(201).json(user);
 })
+
+
+app.post('/api/admin/staffs', async (req, res) => {
+    try {
+        const newStaff = new staffModel(req.body);
+        await newStaff.save();
+        res.status(201).json({ message: 'Staff created successfully', staff: newStaff });
+    } catch (error) {
+        res.status(400).json({ message: 'Error creating staff: ' + error.message });
+    }
+});
+
+
+app.put('/api/admin/staffs/:id', async (req, res) => {
+    const staffId = req.params.id;
+    try {
+        const updatedStaff = await staffModel.findByIdAndUpdate(staffId, req.body, { new: true });
+        if (!updatedStaff) {
+            return res.status(404).json({ message: 'Staff not found' });
+        }
+        res.status(200).json({ message: 'Staff updated successfully', staff: updatedStaff });
+    } catch (error) {
+        res.status(400).json({ message: 'Error updating staff: ' + error.message });
+    }
+});
+
+
 
 app.listen(port, () => {
     console.log(`Server is running on port ${port}`);

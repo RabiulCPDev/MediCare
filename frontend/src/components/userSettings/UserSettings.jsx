@@ -43,7 +43,7 @@ export const UserSettings = () => {
             const token = sessionStorage.getItem('token');
             const { current_password, new_password, ...otherData } = formData;
 
-            await axios.put('http://localhost:5000/api/user/update-password', { 
+            await axios.put('http://localhost:5000/api/user/updateUser', { 
                 current_password, 
                 new_password, 
                 ...otherData 
@@ -54,8 +54,7 @@ export const UserSettings = () => {
             });
 
             alert("User details and password updated successfully!");
-            setError("");
-            navigate('/account');
+            navigate('/');
         } catch (error) {
             console.error("Error updating user details or password:", error);
             setError("Please provide correct credential and try again");
@@ -110,7 +109,6 @@ export const UserSettings = () => {
                             <option value="">Select</option>
                             <option value="Male">Male</option>
                             <option value="Female">Female</option>
-                            <option value="Other">Other</option>
                         </select>
                     </div>
                     <div>
@@ -161,18 +159,7 @@ export const UserSettings = () => {
                             className="mt-1 block w-full border border-gray-300 rounded-md"
                         />
                     </div>
-                    <div>
-                        <label className="block text-gray-700">Payment Status</label>
-                        <select
-                            name="payment_status"
-                            value={formData.payment_status}
-                            onChange={handleInputChange}
-                            className="mt-1 block w-full border border-gray-300 rounded-md"
-                        >
-                            <option value={false}>Unpaid</option>
-                            <option value={true}>Paid</option>
-                        </select>
-                    </div>
+
                     <div>
                         <label className="block text-gray-700">Current Password</label>
                         <input
@@ -214,6 +201,7 @@ export const UserSettings = () => {
                 <div className="mt-4">
                     <button
                         type="submit"
+                        onClick={handleSubmit}
                         className="w-full py-2 px-4 bg-blue-600 text-white rounded-md hover:bg-blue-700"
                     >
                         Save Changes

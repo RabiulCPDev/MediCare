@@ -13,6 +13,7 @@ import {UserSettings} from"../components/userSettings/UserSettings";
 import { Appoinment } from "../pages/Appointment";
 import {DepartmentProfile} from "../components/department/DepartmentProfile";
 import { ServiceProfile } from "../components/Services/ServiceProfile";
+import AdminDashboard from "../components/Dashboard/Dashboard";
 export const router = createBrowserRouter([
     {
       path: '/',
@@ -72,6 +73,9 @@ export const router = createBrowserRouter([
         },{
           path: 'appoinment/:id',
           element: <Appoinment/>
+        },{
+          path: '/admin',
+          element: <AdminDashboard/>
         }
       ],
     }

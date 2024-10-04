@@ -12,7 +12,7 @@ const Authentication = (req, res, next) => {
     try {
         const JWT_Token = process.env.JWT_SECRET;
         const verify = jwt.verify(token, JWT_Token); 
-        req.us = verify;  
+        req.user = verify;  
         console.log(verify + " From middleware");
         next();
     } catch (err) {
