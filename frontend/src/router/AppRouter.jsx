@@ -10,7 +10,7 @@ import{Departments} from '../pages/Departments';
 import {DoctorProfile} from"../components/doctor/DoctorProfile";
 import { UserAccount } from "../components/userSettings/UserAccount";
 import {UserSettings} from"../components/userSettings/UserSettings";
-import { Appoinment } from "../pages/Appointment";
+import { Appointment } from "../pages/Appointment";
 import {DepartmentProfile} from "../components/department/DepartmentProfile";
 import { ServiceProfile } from "../components/Services/ServiceProfile";
 import { AdminLogIn } from "../pages/AdminLogIn";
@@ -82,7 +82,7 @@ export const router = createBrowserRouter([
           element: <DoctorProfile/>
         },{
           path: 'appoinment/:id',
-          element: <Appoinment/>
+          element: <Appointment/>
         }
       ],
     },{

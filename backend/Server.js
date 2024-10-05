@@ -643,7 +643,7 @@ const store_passwd = process.env.STORE_PASSWORD;
 const is_live = false;
 
 app.post('/api/payment', async (req, res) => {
-    const { doctor_id, customer_id, fee,shift_time } = req.body;
+    const { doctor_id, customer_id, fee,app_time,app_date } = req.body;
     const tid = new ObjectId().toString(); 
     
     const data = {
@@ -686,7 +686,8 @@ app.post('/api/payment', async (req, res) => {
             const appointment = new appointmentModel({
                 doctor_id: doctor_id,
                 user_id: customer_id, 
-                app_time:shift_time,
+                app_time:app_time,
+                app_date:app_date,
                 payment_Status: false, 
                 payment_id: tid, 
             });
