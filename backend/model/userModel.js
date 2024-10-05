@@ -15,6 +15,7 @@ const userModel =new mongoose.Schema({
     joining_date: {type:Date,default: Date.now()},
     doctor_incharge: {type:String,default:""},
     user_url: { type: String,default:"" },
+    blood_group:{type:String}
 })
 
 module.exports = mongoose.model('user',userModel);

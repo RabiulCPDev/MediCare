@@ -157,7 +157,6 @@ app.post('/api/user/login',async(req,res)=>{
     }
 })
 
-// Register route
 
 app.post('/api/user/register',async(req,res)=>{
 
@@ -206,16 +205,21 @@ app.get('/api/doctors',async(req,res)=>{
     }
 })
 
+// Appointments
 
-app.get('/api/user/appointment',async(req,res)=>{
-    try{
-        const {app_id} =req.body;
-        const appointment=await appointmentModel.find({app_id});
-        res.status(200).json({appointment});
-    }catch(error){
-        res.status(500).json({message:"No appointment found",error});
+app.get('/api/user/appointments/:id', async (req, res) => {
+    const user_id = req.params.id;
+    try {
+        const appointments = await appointmentModel.find({ user_id }); 
+        if (!appointments.length) {
+            return res.status(404).json({ message: "No appointments found" });
+        }
+        res.status(200).json(appointments);
+    } catch (error) {
+        res.status(500).json({ message: "Error fetching appointments", error });
     }
-})
+});
+
 
 app.post('/api/user/appointment',async(req,res)=>{
     try{
@@ -251,40 +255,6 @@ app.get('/api/services',async(req,res)=>{
 })
 
 
-app.post('/api/admin/createDoctor',(req,res)=>{
-    const doctor = req.body;
-    createDoctor(doctor);
-    console.log(doctor);
-    res.status(201).json(doctor);
-})
-
-app.post('/api/admin/createStaff',(req,res)=>{
-    const staff = req.body;
-    CreateStaff(staff);
-    console.log(staff);
-    res.status(201).json(staff);
-})
-app.post('/api/admin/createService',(req,res)=>{
-    const service = req.body;
-    CreateService(service);
-    console.log(service);
-    res.status(201).json(service);
-})
-
-app.post('/api/admin/createDepartment',(req,res)=>{
-    const department = req.body;
-    CreateDepartment(department);
-    console.log(department);
-    res.status(201).json(department);
-})
-
-app.post('/api/user/createUser',(req,res)=>{
-    const user = req.body;
-    CreateUser(user);
-    console.log(user);
-    res.status(201).json(user);
-})
-
 // For Staff
 
 app.post('/api/admin/staffs', async (req, res) => {
@@ -311,8 +281,6 @@ app.put('/api/admin/staffs/:id', async (req, res) => {
     }
 });
 
-
-// For Doctor Route
 
 
 app.put('/api/admin/doctors/:id', async (req, res) => {
