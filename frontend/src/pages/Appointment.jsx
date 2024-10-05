@@ -32,6 +32,17 @@ export const Appoinment=()=>{
         }
     };
 
+   const HandleClicked =async()=>{
+        const res=await axios.post('http://localhost:5000/api/payment',{
+            doctor_id: doctor.id,
+            customer_id:user.id,
+            fee:doctor.consultation_fee
+        });
+
+        cosole.log(res.data.url);
+   }
+
+
     return(
         <div className="bg-gray-900 shadow-lg  justify-center"> 
             <div className="">
@@ -75,7 +86,7 @@ export const Appoinment=()=>{
                     </tbody>
                </table>
                <div>
-                    <button type="submit" className="text-xl text-white rounded-lg bg-blue-500 text-center m-4 p-2">Payment to Confirm</button>
+                    <button type="submit" onClick={HandleClicked} className="text-xl text-white rounded-lg bg-blue-500 text-center m-4 p-2">Payment to Confirm</button>
                </div>
             </div>
         </div>

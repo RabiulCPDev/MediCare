@@ -13,7 +13,12 @@ import {UserSettings} from"../components/userSettings/UserSettings";
 import { Appoinment } from "../pages/Appointment";
 import {DepartmentProfile} from "../components/department/DepartmentProfile";
 import { ServiceProfile } from "../components/Services/ServiceProfile";
-import AdminDashboard from "../components/Dashboard/Dashboard";
+import { AdminLogIn } from "../pages/AdminLogIn";
+import {Dashboard} from "../components/Dashboard/Dashboard"
+import { SuperAdminRegister } from "../pages/SuperAdminRegister";
+import {AdminAccount} from "../components/Dashboard/TopBar/AdminAccount";
+import { AdminUpdateProfile } from "../components/Dashboard/TopBar/AdminUpdateProfile";
+
 export const router = createBrowserRouter([
     {
       path: '/',
@@ -73,13 +78,28 @@ export const router = createBrowserRouter([
         },{
           path: 'appoinment/:id',
           element: <Appoinment/>
-        },{
-          path: '/admin',
-          element: <AdminDashboard/>
         }
       ],
+    },{
+      path: '/admin',
+      element: <AdminLogIn /> 
+    }
+    ,{
+      path: '/admin/register',
+      element:<SuperAdminRegister/> 
+    },
+    {
+      path: '/admin/dashboard',
+      element: (
+       <Dashboard/>
+      )
+    },{
+      path: '/admin/account', 
+      element: <AdminAccount/>
+    },
+    {
+      path: '/admin/updateprofile',
+      element:<AdminUpdateProfile/>
     }
    
   ])
-
-  

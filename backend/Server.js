@@ -4,11 +4,6 @@ const session=  require('express-session');
 const app = express();
 const jwt = require('jsonwebtoken');
 const ConnectDB = require("./config/connectDB");
-const createDoctor = require("./admin/createDoctor");
-const CreateStaff = require('./admin/createStaff');
-const CreateUser = require('./user/createUser');
-const CreateService = require('./admin/createService');
-const CreateDepartment = require('./admin/createDepartment');
 const userModel = require('./model/userModel');
 const serviceModel = require('./model/serviceModel')
 const port = 5000;
@@ -19,7 +14,8 @@ const doctorModel = require('./model/doctorModel');
 const departmentModel = require('./model/departmentModel');
 const appointmentModel = require('./model/appointmentModel');
 const staffModel = require('./model/staffModel');
-
+const adminModel = require('./model/adminModel');
+const adminAuthentication = require('./middleware/adminAuthenticate')
 
 app.use(express.json());
 app.use(cors());
@@ -30,12 +26,6 @@ app.use(session({
     cookie: { secure: false }
 }));
 ConnectDB();
-
-// app.get('/api/user/data',Authentication, (req, res) => {
-//     const data = req.body;
-//     console.log(data);
-//     res.status(201).json(data);
-// })
 
 
 app.get('/api/user/data', Authentication, async (req, res) => {
@@ -90,19 +80,6 @@ app.get('/api/admin/staffs', async (req, res) => {
     }
 });
 
-app.delete('/api/admin/users/:id', async (req, res) => {
-    const userId = req.params.id;
-    try {
-        const deletedUser = await userModel.findByIdAndDelete(userId);
-        if (!deletedUser) {
-            return res.status(404).json({ message: 'User not found' });
-        }
-        res.status(200).json({ message: 'User deleted successfully' });
-    } catch (error) {
-        console.error('Error deleting user:', error.message);
-        res.status(500).json({ message: 'Server error: ' + error.message });
-    }
-});
 
 app.delete('/api/admin/staffs/:id', async (req, res) => {
     const staffId = req.params.id;
@@ -306,6 +283,7 @@ app.post('/api/user/createUser',(req,res)=>{
     res.status(201).json(user);
 })
 
+// For Staff
 
 app.post('/api/admin/staffs', async (req, res) => {
     try {
@@ -330,6 +308,379 @@ app.put('/api/admin/staffs/:id', async (req, res) => {
         res.status(400).json({ message: 'Error updating staff: ' + error.message });
     }
 });
+
+
+// For Doctor Route
+
+
+app.put('/api/admin/doctors/:id', async (req, res) => {
+    try {
+        const updatedDoctor = await doctorModel.findByIdAndUpdate(req.params.id, req.body, { new: true });
+        if (!updatedDoctor) {
+            return res.status(404).json({ message: 'Doctor not found' });
+        }
+        res.json(updatedDoctor);
+    } catch (error) {
+        res.status(400).json({ message: error.message });
+    }
+});
+
+app.post('/api/admin/doctor', async (req, res) => {
+    try {
+        const newDoctor = new doctorModel(req.body);
+        const savedDoctor = await newDoctor.save();
+        res.status(201).json(savedDoctor);
+    } catch (error) {
+        res.status(400).json({ message: error.message });
+    }
+});
+
+app.delete('/api/doctors/:id', async (req, res) => {
+    try {
+        const deletedDoctor = await doctorModel.findByIdAndDelete(req.params.id);
+        if (!deletedDoctor) {
+            return res.status(404).json({ message: 'Doctor not found' });
+        }
+        res.json({ message: 'Doctor deleted successfully' });
+    } catch (error) {
+        console.error("Error deleting doctor:", error);
+        res.status(500).json({ message: 'Error deleting doctor' });
+    }
+});
+
+//  admin-----> user
+
+app.post('/api/admin/users', async (req, res) => {
+    const { email,password } = req.body;
+    const existingUser = await userModel.findOne({ email });
+
+    if (existingUser) {
+      return res.status(409).json({ message: "User already exists with this email" });
+    }
+    else{ try{
+    
+        const hashPass= await bcrypt.hash(password,parseInt(process.env.Hash_Salt));
+        const details = req.body;
+        details.password=hashPass;
+        const userM = new userModel(details);
+        const result= await userM.save();
+    if(result){
+        
+        res.status(200).json({message: "user created Successfully", user: result});
+       
+    }else{
+        res.status(401).json({message: "user creatation fail"});
+    }
+}catch(error){
+    console.log(error.message);
+    res.status(500).json({message: "Error in add user"});
+}
+    }
+});
+
+app.put('/api/admin/users/:id', async (req, res) => {
+    const { fname, lname, email, phone, password } = req.body;
+    const userId = req.params.id;
+    const hashPass= await bcrypt.hash(password,parseInt(process.env.Hash_Salt));
+    try {
+        const updatedUser = await userModel.findByIdAndUpdate(userId, { fname, lname, email, phone, hashPass }, { new: true });
+        if (!updatedUser) return res.status(404).json({ message: 'User not found.' });
+        res.json(updatedUser);
+    } catch (error) {
+        res.status(400).json({ message: 'Error updating user.', error: error.message });
+    }
+});
+
+app.delete('/api/admin/users/:id', async (req, res) => {
+    const userId = req.params.id;
+
+    try {
+        const deletedUser = await userModel.findByIdAndDelete(userId);
+        if (!deletedUser) return res.status(404).json({ message: 'User not found.' });
+        res.json({ message: 'User deleted successfully.' });
+    } catch (error) {
+        res.status(500).json({ message: 'Error deleting user.' });
+    }
+});
+
+
+// admin->>>>>>Department 
+
+app.post('/api/admin/departments', async (req, res) => {
+    const { name, department_id, url, description } = req.body;
+    const department = new departmentModel({ name, department_id, url, description });
+
+    try {
+        await department.save();
+        res.status(201).json(department);
+    } catch (error) {
+        res.status(400).json({ message: 'Error creating department', error });
+    }
+});
+
+app.put('/api/admin/departments/:id', async (req, res) => {
+    const { id } = req.params;
+    const { name, department_id, url, description } = req.body;
+
+    try {
+        const updatedDepartment = await departmentModel.findByIdAndUpdate(
+            id,
+            { name, department_id, url, description },
+            { new: true, runValidators: true }
+        );
+
+        if (!updatedDepartment) {
+            return res.status(404).json({ message: 'Department not found' });
+        }
+
+        res.json(updatedDepartment);
+    } catch (error) {
+        res.status(400).json({ message: 'Error updating department', error });
+    }
+});
+
+app.delete('/api/admin/departments/:id', async (req, res) => {
+    const { id } = req.params;
+
+    try {
+        const deletedDepartment = await departmentModel.findByIdAndDelete(id);
+
+        if (!deletedDepartment) {
+            return res.status(404).json({ message: 'Department not found' });
+        }
+
+        res.json({ message: 'Department deleted successfully' });
+    } catch (error) {
+        res.status(400).json({ message: 'Error deleting department', error });
+    }
+});
+
+app.get('/api/admin/departments', async (req, res) => {
+    try {
+        const departments = await departmentModel.find();
+        res.json(departments);
+    } catch (error) {
+        res.status(500).json({ message: 'Error fetching departments', error });
+    }
+});
+
+app.get('/api/admin/departments/:id', async (req, res) => {
+    const { id } = req.params;
+
+    try {
+        const department = await departmentModel.findById(id);
+
+        if (!department) {
+            return res.status(404).json({ message: 'Department not found' });
+        }
+
+        res.json(department);
+    } catch (error) {
+        res.status(500).json({ message: 'Error fetching department', error });
+    }
+});
+
+
+// admin services--------->>>>>>
+
+app.get('/api/admin/services', async (req, res) => {
+    try {
+        const services = await serviceModel.find();
+        res.json(services);
+    } catch (error) {
+        res.status(500).json({ message: 'Error fetching services', error });
+    }
+});
+
+app.get('/api/admin/services/:id', async (req, res) => {
+    const { id } = req.params;
+
+    try {
+        const service = await serviceModel.findById(id);
+
+        if (!service) {
+            return res.status(404).json({ message: 'Service not found' });
+        }
+
+        res.json(service);
+    } catch (error) {
+        res.status(500).json({ message: 'Error fetching service', error });
+    }
+});
+
+app.post('/api/admin/services', async (req, res) => {
+    const { name, service_id, url, description } = req.body;
+
+    const newService = new serviceModel({
+        name,
+        service_id,
+        url,
+        description,
+    });
+
+    try {
+        const savedService = await newService.save();
+        res.status(201).json(savedService);
+    } catch (error) {
+        res.status(500).json({ message: 'Error creating service', error });
+    }
+});
+
+
+app.put('/api/admin/services/:id', async (req, res) => {
+    const { id } = req.params;
+
+    try {
+        const updatedService = await serviceModel.findByIdAndUpdate(id, req.body, { new: true });
+
+        if (!updatedService) {
+            return res.status(404).json({ message: 'Service not found' });
+        }
+
+        res.json(updatedService);
+    } catch (error) {
+        res.status(500).json({ message: 'Error updating service', error });
+    }
+});
+
+app.delete('/api/admin/services/:id', async (req, res) => {
+    const { id } = req.params;
+
+    try {
+        const deletedService = await serviceModel.findByIdAndDelete(id);
+
+        if (!deletedService) {
+            return res.status(404).json({ message: 'Service not found' });
+        }
+
+        res.json({ message: 'Service deleted successfully' });
+    } catch (error) {
+        res.status(500).json({ message: 'Error deleting service', error });
+    }
+});
+
+app.post('/api/admin/register', async (req, res) => {
+    const { username, password } = req.body;
+    const hashPass = await bcrypt.hash(password, parseInt(process.env.Hash_Salt));
+    try {
+        const newAdmin = new adminModel({ username, password: hashPass }); 
+        await newAdmin.save();
+        res.status(201).json({ message: 'Admin registered successfully' });
+    } catch (error) {
+        res.status(400).json({ error: 'Error registering admin: ' + error.message });
+    }
+});
+
+app.post('/api/admin/login', async (req, res) => {
+    const { username, password } = req.body;
+    try {
+        const admin = await adminModel.findOne({ username });
+        if (!admin) {
+            return res.status(401).json({ message: 'Invalid credentials' });
+        }
+
+        const isMatch = await bcrypt.compare(password, admin.password);
+        if (!isMatch) {
+            return res.status(401).json({ message: 'Invalid credentials' });
+        }
+        const token = jwt.sign({ id: admin._id }, process.env.JWT_SECRET, { expiresIn: '1h' });
+        
+        res.json({ token });
+    } catch (error) {
+        res.status(500).json({ error: 'Error logging in: ' + error.message });
+    }
+});
+
+app.get('/admin/dashboard', adminAuthentication, async (req, res) => {
+    res.status(200).json({ message: 'Welcome to the admin dashboard!', adminId: req.adminId });
+});
+
+app.get('/api/admin/profile', adminAuthentication, async (req, res) => {
+    try {
+        const admin = await adminModel.findById(req.adminId).select('-password');
+        if (!admin) {
+            return res.status(404).json({ error: 'Admin not found' });
+        }
+        res.json(admin);
+    } catch (error) {
+        res.status(500).json({ error: 'Error fetching admin data: ' + error.message });
+    }
+});
+app.put('/api/admin/updateprofile', adminAuthentication, async (req, res) => {
+    const { username, previousPassword, newPassword } = req.body;
+    console.log(req.body);
+    try {
+       
+        const admin = await adminModel.findById(req.adminId);
+        console.log(admin);
+        const isMatch = await bcrypt.compare(previousPassword, admin.password);
+        if (!isMatch) {
+            return res.status(400).json({ error: 'Previous password is incorrect.' });
+        }
+       
+        const updatedData = { username };
+        if (newPassword) {
+            updatedData.password = await bcrypt.hash(newPassword, parseInt(process.env.Hash_Salt));
+        }
+
+       
+        await adminModel.findByIdAndUpdate(req.adminId, updatedData);
+        res.json({ message: 'Profile updated successfully' });
+    } catch (error) {
+        res.status(500).json({ error: 'Error updating profile: ' + error.message });
+    }
+});
+
+
+
+
+// Payment Section------->>>>>>>>>>
+
+
+const store_id = process.env.STORE_ID;
+const store_passwd = process.env.STORE_PASSWORD;
+const is_live = false
+app.post('/init', async(req, res) => {
+    const {doctor_id,customer_id,fee}=req.body;
+    const tid=new ObjectId().toString();
+    const data = {
+        total_amount: fee,
+        currency: 'BDT',
+        tran_id: tid, // use unique tran_id for each api call
+        success_url: 'http://localhost:3030/success',
+        fail_url: 'http://localhost:3030/fail',
+        cancel_url: 'http://localhost:3030/cancel',
+        ipn_url: 'http://localhost:3030/ipn',
+        shipping_method: 'Courier',
+        product_id: 'doctor_id',
+        product_category: 'Electronic',
+        product_profile: 'general',
+        cus_id: customer_id,
+        cus_email: 'customer@example.com',
+        cus_add1: 'Dhaka',
+        cus_add2: 'Dhaka',
+        cus_city: 'Dhaka',
+        cus_state: 'Dhaka',
+        cus_postcode: '1000',
+        cus_country: 'Bangladesh',
+        cus_phone: '01711111111',
+        cus_fax: '01711111111',
+        ship_name: 'Customer Name',
+        ship_add1: 'Dhaka',
+        ship_add2: 'Dhaka',
+        ship_city: 'Dhaka',
+        ship_state: 'Dhaka',
+        ship_postcode: 1000,
+        ship_country: 'Bangladesh',
+    };
+    const sslcz = new SSLCommerzPayment(store_id, store_passwd, is_live)
+    sslcz.init(data).then(apiResponse => {
+        let GatewayPageURL = apiResponse.GatewayPageURL
+        res.send({ur:GatewayPageURL})
+        console.log('Redirecting to: ', GatewayPageURL)
+    });
+})
+
 
 
 

@@ -12,6 +12,12 @@ const Sidebar = ({ setActiveSection }) => {
                 <li className="p-4 hover:bg-gray-700 cursor-pointer" onClick={() => setActiveSection('staff')}>
                     Manage Staff
                 </li>
+                <li className="p-4 hover:bg-gray-700 cursor-pointer" onClick={() => setActiveSection('services')}>
+                    Manage Services
+                </li>
+                <li className="p-4 hover:bg-gray-700 cursor-pointer" onClick={() => setActiveSection('departments')}>
+                    Manage Departments
+                </li>
             </ul>
         </div>
     );
