@@ -19,6 +19,8 @@ import { SuperAdminRegister } from "../pages/SuperAdminRegister";
 import {AdminAccount} from "../components/Dashboard/TopBar/AdminAccount";
 import { AdminUpdateProfile } from "../components/Dashboard/TopBar/AdminUpdateProfile";
 import PaymentStatus from "../components/payment/PaymentStatus";
+import { Hotline } from "../components/hero/Hotline";
+import { Ambulance } from "../pages/Ambulance";
 
 export const router = createBrowserRouter([
     {
@@ -49,6 +51,14 @@ export const router = createBrowserRouter([
         {
           path:'services',
           element: <Services/>
+        },
+        {
+          path:'hotline',
+          element: <Hotline/>
+        },
+        {
+          path:'ambulance',
+          element: <Ambulance/>
         },
         {
           path:'services/:id',

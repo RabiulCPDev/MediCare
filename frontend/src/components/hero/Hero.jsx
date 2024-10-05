@@ -4,6 +4,7 @@ import MedicalServicesIcon from '@mui/icons-material/MedicalServices';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {  faTruckMedical } from '@fortawesome/free-solid-svg-icons';
 import { faUserDoctor ,faCircleInfo } from '@fortawesome/free-solid-svg-icons';
+import { Link } from 'react-router-dom';
 
 
 export const Hero = () => {
@@ -21,18 +22,21 @@ export const Hero = () => {
         <div className=" z-1 top-40 inset-x-0 bg-slate-500 opacity-50 absolute"></div>
 
         <div className=" flex justify-center gap-4 mt-8 relative z-20">
-          <a
-            href="#"
+        <Link to={'/doctors'} >
+          <p
             className="bg-blue-600 text-white p-4 rounded-lg shadow-lg hover:bg-blue-700 transition  "
           >
-            Book an Appoinment
-          </a>
-          <a
-            href="#learn-more"
+            Make an Appointment
+          </p>
+          </Link> 
+          <Link to={'/about'} >
+          <p
+            
             className="bg-green-600 text-white p-4 rounded-lg shadow-lg hover:bg-green-700 transition"
           >
             Learn More
-          </a>
+          </p>
+          </Link> 
         </div>
 
 
@@ -42,15 +46,16 @@ export const Hero = () => {
       </div>
 
       <div className="m-1 flex  justify-center ">
-             
-             <a
-                href="#learn-more"
+         <Link to={'/hotline'} >
+             <p
                 className="flex items-center m-4 text-3xl bg-green-600 text-white p-4 rounded-lg shadow-lg hover:bg-green-700 transition transform hover:scale-105"
               >
                  <EmergencyRecordingIcon style={{fontSize: 50}}/>
-                 <span className='m-2'>24x7 Hotline </span>
-              </a>
-    
+                 <span className='m-2'>
+                   24x7 Hotline  
+                  </span>
+              </p>
+              </Link> 
               {/* <a
                 href="#learn-more"
                 className="m-4 items-center text-3xl bg-green-600 text-white p-4 rounded-lg shadow-lg hover:bg-green-700 transition"
@@ -59,32 +64,38 @@ export const Hero = () => {
                
                 24x7 Emergency
               </a> */}
-    
-              <a
-                href="#learn-more"
+              <Link to={'/ambulance'}>
+              <p
                  className="flex items-center m-4 text-3xl bg-green-600 text-white p-4 rounded-lg shadow-lg hover:bg-green-700 transition transform hover:scale-105"
               >
                 <FontAwesomeIcon icon={faTruckMedical} style={{fontSize:40, margin:4}}/>
-                <span className='m-2'>24x7 Ambulance </span>
-              </a>
-    
+                <span className='m-2'>
+                 24/7 Ambulance
+                   </span>
+              </p>
+              </Link>
              
-               
-              <a
-                href="#learn-more"
+              <Link to={'/doctors'}>  
+              <p
                  className="flex items-center m-4 text-3xl bg-green-600 text-white p-4 rounded-lg shadow-lg hover:bg-green-700 transition transform hover:scale-105"
               >
              <FontAwesomeIcon icon={faUserDoctor} style={{fontSize:40, margin:4}} />
-             <span className='m-2'> Specialists </span>
-              </a>
-
-              <a
-                href="#learn-more"
-  className="flex items-center m-4 text-3xl bg-green-600 text-white p-4 rounded-lg shadow-lg hover:bg-green-700 transition transform hover:scale-105"
+             <span className='m-2'> 
+                Specialists
+               </span>
+              </p>
+              </Link>
+             
+              <Link to={'/about'}>
+              <p
+                  className="flex items-center m-4 text-3xl bg-green-600 text-white p-4 rounded-lg shadow-lg hover:bg-green-700 transition transform hover:scale-105"
               >
             <FontAwesomeIcon icon={faCircleInfo} style={{fontSize:40, margin:3}} />
-             <span className='m-2'> Information </span>
-              </a>
+             <span className='m-2'> 
+                  Information
+             </span>
+              </p>
+              </Link>
             </div>
 
 
