@@ -25,6 +25,7 @@ export const Appoinment=()=>{
                     'Authorization': `Bearer ${token}`,
                 },
             });
+          
             setUser(response.data.user);
         } catch (error) {
             console.error('Error fetching user data:', error);
@@ -32,15 +33,24 @@ export const Appoinment=()=>{
         }
     };
 
-   const HandleClicked =async()=>{
-        const res=await axios.post('http://localhost:5000/api/payment',{
-            doctor_id: doctor.id,
-            customer_id:user.id,
-            fee:doctor.consultation_fee
-        });
-
-        cosole.log(res.data.url);
-   }
+    const HandleClicked = async () => {
+        try {
+            console.log(user);
+            const res = await axios.post('http://localhost:5000/api/payment', {
+                doctor_id: doctor._id,
+                customer_id: user._id,
+                fee: doctor.consultation_fee,
+                app_time:doctor.shiftTime
+            });
+            
+            // Redirect to the GatewayPageURL received from the backend
+            window.location.href = res.data.url;
+        } catch (error) {
+            console.error('Error during payment:', error);
+            alert('Payment failed, please try again.');
+        }
+    }
+    
 
 
     return(
@@ -75,7 +85,7 @@ export const Appoinment=()=>{
                         </tr>
                         <tr>
                             <td className="py-2 px-4 border  text-white text-2xl text-center">Appoinment Date & Time</td>
-                            <td className="py-2 px-4 border  text-white text-2xl text-center">{Date.now()}</td>
+                            <td className="py-2 px-4 border  text-white text-2xl text-center">{doctor.shift_time}</td>
                         </tr>
                         <tr className="">
                         <td className="py-2 px-4 border  text-white text-2xl text-center">Consultation Fee</td>

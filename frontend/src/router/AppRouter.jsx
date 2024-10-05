@@ -18,6 +18,7 @@ import {Dashboard} from "../components/Dashboard/Dashboard"
 import { SuperAdminRegister } from "../pages/SuperAdminRegister";
 import {AdminAccount} from "../components/Dashboard/TopBar/AdminAccount";
 import { AdminUpdateProfile } from "../components/Dashboard/TopBar/AdminUpdateProfile";
+import PaymentStatus from "../components/payment/PaymentStatus";
 
 export const router = createBrowserRouter([
     {
@@ -40,6 +41,10 @@ export const router = createBrowserRouter([
         {
           path: 'doctors',
           element: <Doctors/>
+        },
+        {
+          path: 'paymentStatus',
+          element: <PaymentStatus/>
         },
         {
           path:'services',

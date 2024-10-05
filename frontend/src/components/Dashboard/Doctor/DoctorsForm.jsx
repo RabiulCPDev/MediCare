@@ -19,12 +19,12 @@ const DoctorsForm = ({ doctor, onSuccess, onCancel }) => {
         joining_date: '',
         employee_id: '',
         description: '',
-        url: ''
+        url: '',
+        shift_time:'',
     });
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
 
-    // Populate the form fields if a doctor object is passed
     useEffect(() => {
         if (doctor) {
             setDoctorData(doctor);
@@ -47,7 +47,6 @@ const DoctorsForm = ({ doctor, onSuccess, onCancel }) => {
                 await axios.put(`http://localhost:5000/api/admin/doctors/${doctor._id}`, doctorData);
                 alert('Doctor updated successfully.');
             } else {
-                // Create a new doctor
                 await axios.post('http://localhost:5000/api/admin/doctor', doctorData);
                 alert('Doctor created successfully.');
             }
@@ -254,6 +253,17 @@ const DoctorsForm = ({ doctor, onSuccess, onCancel }) => {
                     type="text"
                     id="url"
                     value={doctorData.url}
+                    onChange={handleChange}
+                    className="border rounded px-2 py-1 w-full"
+                />
+            </div>
+
+            <div>
+                <label>Shift_Time:</label>
+                <input
+                    type="text"
+                    id="shift_time"
+                    value={doctorData.shift_time}
                     onChange={handleChange}
                     className="border rounded px-2 py-1 w-full"
                 />

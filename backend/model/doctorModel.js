@@ -18,5 +18,6 @@ const doctorModel = new mongoose.Schema({
     employee_id: { type: String },
     description:{ type: String},
     url: { type : String },
+    shift_time:{type:String}
 });
   module.exports= mongoose.model("doctor",doctorModel);

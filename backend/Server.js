@@ -16,6 +16,8 @@ const appointmentModel = require('./model/appointmentModel');
 const staffModel = require('./model/staffModel');
 const adminModel = require('./model/adminModel');
 const adminAuthentication = require('./middleware/adminAuthenticate')
+const SSLCommerzPayment = require('sslcommerz-lts')
+const { ObjectId } = require('mongodb');
 
 app.use(express.json());
 app.use(cors());
@@ -636,26 +638,27 @@ app.put('/api/admin/updateprofile', adminAuthentication, async (req, res) => {
 
 // Payment Section------->>>>>>>>>>
 
-
 const store_id = process.env.STORE_ID;
 const store_passwd = process.env.STORE_PASSWORD;
-const is_live = false
-app.post('/init', async(req, res) => {
-    const {doctor_id,customer_id,fee}=req.body;
-    const tid=new ObjectId().toString();
+const is_live = false;
+
+app.post('/api/payment', async (req, res) => {
+    const { doctor_id, customer_id, fee,shift_time } = req.body;
+    const tid = new ObjectId().toString(); 
+    
     const data = {
         total_amount: fee,
         currency: 'BDT',
-        tran_id: tid, // use unique tran_id for each api call
-        success_url: 'http://localhost:3030/success',
-        fail_url: 'http://localhost:3030/fail',
-        cancel_url: 'http://localhost:3030/cancel',
-        ipn_url: 'http://localhost:3030/ipn',
+        tran_id: tid, 
+        success_url: `http://localhost:5000/success?tran_id=${tid}`, 
+        fail_url: `http://localhost:5000/fail?tran_id=${tid}`,
+        cancel_url: `http://localhost:5000/cancel?tran_id=${tid}`,
+        ipn_url: 'http://localhost:5000/ipn',
         shipping_method: 'Courier',
-        product_id: 'doctor_id',
+        product_name: 'Computer.',
         product_category: 'Electronic',
         product_profile: 'general',
-        cus_id: customer_id,
+        cus_name: 'Customer Name',
         cus_email: 'customer@example.com',
         cus_add1: 'Dhaka',
         cus_add2: 'Dhaka',
@@ -673,15 +676,66 @@ app.post('/init', async(req, res) => {
         ship_postcode: 1000,
         ship_country: 'Bangladesh',
     };
-    const sslcz = new SSLCommerzPayment(store_id, store_passwd, is_live)
-    sslcz.init(data).then(apiResponse => {
-        let GatewayPageURL = apiResponse.GatewayPageURL
-        res.send({ur:GatewayPageURL})
-        console.log('Redirecting to: ', GatewayPageURL)
+
+ 
+    const sslcz = new SSLCommerzPayment(store_id, store_passwd, is_live);
+    sslcz.init(data).then(async apiResponse => {
+        let GatewayPageURL = apiResponse.GatewayPageURL;
+        if (GatewayPageURL) {
+           
+            const appointment = new appointmentModel({
+                doctor_id: doctor_id,
+                user_id: customer_id, 
+                app_time:shift_time,
+                payment_Status: false, 
+                payment_id: tid, 
+            });
+
+            await appointment.save(); 
+
+            res.send({ url: GatewayPageURL });
+            console.log('Redirecting to: ', GatewayPageURL);
+        } else {
+            console.error('No GatewayPageURL in response:', apiResponse);
+            res.status(500).send('Payment gateway URL not found.');
+        }
+    }).catch(error => {
+        console.error('Error initializing SSLCommerz:', error.response ? error.response.data : error.message);
+        res.status(500).send('Payment initiation failed.');
     });
-})
+});
+
+app.post('/success', async (req, res) => {
+    const { tran_id } = req.query; 
+    console.log(`Transaction successful: ${tran_id}`);
+
+    await appointmentModel.updateOne(
+        { payment_id: tran_id },
+        { payment_Status: true } 
+    );
+
+    res.redirect(`http://localhost:3000/paymentStatus?status=success&tran_id=${tran_id}`);
+});
+
+app.post('/fail', async (req, res) => {
+    const { tran_id } = req.query; 
+    console.log(`Transaction failed: ${tran_id}`);
+
+    
+    await appointmentModel.deleteOne({payment_id:tran_id});
+
+    res.redirect(`http://localhost:3000/paymentStatus?status=fail&tran_id=${tran_id}`);
+
+});
 
 
+app.post('/cancel', async (req, res) => {
+    const { tran_id } = req.query; 
+    console.log(`Transaction canceled: ${tran_id}`);
+
+    await appointmentModel.deleteOne({payment_id:tran_id});
+    res.redirect(`http://localhost:3000/paymentStatus?status=cancel&tran_id=${tran_id}`);
+});
 
 
 app.listen(port, () => {
