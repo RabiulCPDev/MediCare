@@ -4,14 +4,14 @@ export const DepartmentCard = ({ departments }) => {
   const navigate = useNavigate();
 
   const ReadMore = () => {
-    navigate(`/departments/${departments._id}`, { state: { departments: departments } });
+    navigate(`/departments/${departments._id}`, { state: { departments } });
   };
 
   return (
-    <div className="flex flex-col h-auto bg-white p-4 mt-4 w-full sm:w-72 md:w-96 shadow-lg rounded-lg transition-transform duration-200 hover:shadow-xl hover:scale-105">
+    <div className="flex flex-col h-auto bg-white p-4 mt-4 mx-auto w-full sm:w-80 md:w-96 lg:w-[400px] shadow-lg rounded-lg transition-transform duration-200 hover:shadow-xl hover:scale-105">
       <div>
         <img
-          className="w-full h-48 sm:h-48 md:h-64 mx-auto rounded-lg mb-2 shadow-lg object-cover"
+          className="w-full h-48 sm:h-48 md:h-56 lg:h-64 mx-auto rounded-lg mb-2 shadow-lg object-cover"
           src={departments.url}
           alt="Department Picture"
         />
