@@ -18,6 +18,7 @@ const adminModel = require('./model/adminModel');
 const adminAuthentication = require('./middleware/adminAuthenticate')
 const SSLCommerzPayment = require('sslcommerz-lts')
 const { ObjectId } = require('mongodb');
+const servicePayModel = require('./model/servicePayModel');
 
 app.use(express.json());
 app.use(cors());
@@ -33,7 +34,6 @@ ConnectDB();
 app.get('/api/user/data', Authentication, async (req, res) => {
     try {
        
-        console.log('Decoded token:', req.us);
         const userId = req.user.id;
 
         const user = await userModel.findById(userId).select('-password');
@@ -618,9 +618,9 @@ app.post('/api/payment', async (req, res) => {
         total_amount: fee,
         currency: 'BDT',
         tran_id: tid, 
-        success_url: `http://localhost:5000/success?tran_id=${tid}`, 
-        fail_url: `http://localhost:5000/fail?tran_id=${tid}`,
-        cancel_url: `http://localhost:5000/cancel?tran_id=${tid}`,
+        success_url: `http://localhost:5000/success?tran_id=${tid}&state=appointment`, 
+        fail_url: `http://localhost:5000/fail?tran_id=${tid}&state=appointment`,
+        cancel_url: `http://localhost:5000/cancel?tran_id=${tid}&state=appointment`,
         ipn_url: 'http://localhost:5000/ipn',
         shipping_method: 'Courier',
         product_name: 'Computer.',
@@ -674,24 +674,100 @@ app.post('/api/payment', async (req, res) => {
     });
 });
 
+
+// Service PAy
+
+app.post('/api/service/payment', async (req, res) => {
+    console.log('Received payment request:', req.body); // Log incoming request
+    const { name, service_id, user_id, fee } = req.body;
+    const tid = new ObjectId().toString();
+    
+    const data = {
+        total_amount: fee,
+        currency: 'BDT',
+        tran_id: tid, 
+        success_url: `http://localhost:5000/success?tran_id=${tid}&state=service`, 
+        fail_url: `http://localhost:5000/fail?tran_id=${tid}&state=service`,
+        cancel_url: `http://localhost:5000/cancel?tran_id=${tid}&state=service`,
+        ipn_url: 'http://localhost:5000/ipn',
+        shipping_method: 'Courier',
+        product_name: 'Computer.',
+        product_category: 'Electronic',
+        product_profile: 'general',
+        cus_name: 'Customer Name',
+        cus_email: 'customer@example.com',
+        cus_add1: 'Dhaka',
+        cus_add2: 'Dhaka',
+        cus_city: 'Dhaka',
+        cus_state: 'Dhaka',
+        cus_postcode: '1000',
+        cus_country: 'Bangladesh',
+        cus_phone: '01711111111',
+        cus_fax: '01711111111',
+        ship_name: 'Customer Name',
+        ship_add1: 'Dhaka',
+        ship_add2: 'Dhaka',
+        ship_city: 'Dhaka',
+        ship_state: 'Dhaka',
+        ship_postcode: 1000,
+        ship_country: 'Bangladesh',
+    };
+
+    console.log('Payment data:', data); // Log payment data
+
+    const sslcz = new SSLCommerzPayment(store_id, store_passwd, is_live);
+    sslcz.init(data).then(async apiResponse => {
+        let GatewayPageURL = apiResponse.GatewayPageURL;
+        if (GatewayPageURL) {
+            const servicePayment = new servicePayModel({
+                name: name,
+                service_id: service_id,
+                user_id: user_id,
+                fee: fee
+            });
+            await servicePayment.save();  
+            res.send({ url: GatewayPageURL });  
+            console.log('Redirecting to: ', GatewayPageURL);
+        } else {
+            console.error('No GatewayPageURL in response:', apiResponse);
+            res.status(500).send('Payment gateway URL not found.');
+        }
+    }).catch(error => {
+        console.error('Error initializing SSLCommerz:', error.response ? error.response.data : error.message);
+        res.status(500).send('Payment initiation failed.');
+    });
+});
+
+
 app.post('/success', async (req, res) => {
     const { tran_id } = req.query; 
+    const {state} = req.query;
     console.log(`Transaction successful: ${tran_id}`);
-
-    await appointmentModel.updateOne(
-        { payment_id: tran_id },
-        { payment_Status: true } 
-    );
-
+    if(state==='appointment'){
+        await appointmentModel.updateOne(
+            { payment_id: tran_id },
+            { payment_Status: true } 
+        );
+    }else {
+        await servicePayModel.updateOne(
+            { payment_id: tran_id },
+            { payment_Status: true } 
+        );
+    }
     res.redirect(`http://localhost:3000/paymentStatus?status=success&tran_id=${tran_id}`);
 });
 
 app.post('/fail', async (req, res) => {
     const { tran_id } = req.query; 
+    const {state} = req.query;
     console.log(`Transaction failed: ${tran_id}`);
 
+    if(state==='appointment'){
+        await appointmentModel.deleteOne({payment_id:tran_id});
+    }else{
+        await servicePayModel.deleteOne({payment_id:tran_id});
+    }
     
-    await appointmentModel.deleteOne({payment_id:tran_id});
 
     res.redirect(`http://localhost:3000/paymentStatus?status=fail&tran_id=${tran_id}`);
 
@@ -700,9 +776,14 @@ app.post('/fail', async (req, res) => {
 
 app.post('/cancel', async (req, res) => {
     const { tran_id } = req.query; 
+    const {state} = req.query;
     console.log(`Transaction canceled: ${tran_id}`);
-
-    await appointmentModel.deleteOne({payment_id:tran_id});
+    if(state==='appointment'){
+        await appointmentModel.deleteOne({payment_id:tran_id});
+    }else{
+        await servicePayModel.deleteOne({payment_id:tran_id});
+    }
+    
     res.redirect(`http://localhost:3000/paymentStatus?status=cancel&tran_id=${tran_id}`);
 });
 

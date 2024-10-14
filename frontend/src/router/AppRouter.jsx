@@ -21,6 +21,7 @@ import { AdminUpdateProfile } from "../components/Dashboard/TopBar/AdminUpdatePr
 import PaymentStatus from "../components/payment/PaymentStatus";
 import { Hotline } from "../components/hero/Hotline";
 import { Ambulance } from "../pages/Ambulance";
+import { ServicePayment } from "../components/Services/ServicePayment";
 
 export const router = createBrowserRouter([
     {
@@ -63,6 +64,10 @@ export const router = createBrowserRouter([
         {
           path:'services/:id',
           element: <ServiceProfile/>
+        },
+        {
+          path:'services/payment/:id',
+          element: <ServicePayment/>
         },
         {
           path: 'register',

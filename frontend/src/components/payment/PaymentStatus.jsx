@@ -1,11 +1,13 @@
 import React from 'react';
-import { useLocation } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 
 const PaymentStatus = () => {
     const query = new URLSearchParams(useLocation().search);
     const tran_id = query.get('tran_id');
     const status = query.get('status');
-    console.log(status);
+   
+    const navigate = useNavigate();
+
     const renderMessage = () => {
         switch (status) {
             case 'success':
@@ -42,6 +44,7 @@ const PaymentStatus = () => {
     return (
         <div className="flex flex-col items-center justify-center min-h-screen">
             {renderMessage()}
+            <button className='bg-green-400 rounded-md border-white m-3 p-3' type='submit' onClick={()=>navigate('/')}>Go To Home Page</button>
         </div>
     );
 };

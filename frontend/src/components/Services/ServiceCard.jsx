@@ -7,6 +7,14 @@ export const ServiceCard = ({ services }) => {
     navigate(`/services/${services._id}`, { state: { services: services } });
   };
 
+  const TakeService = ()=>{
+    const token = sessionStorage.getItem('token');
+    if(!token) {
+      navigate('\login');
+    }
+    navigate(`/services/payment/${services._id}`,{state: {services:services}});
+  }
+
   return (
     <div className="flex flex-col h-auto bg-white p-4 mt-4 w-full sm:w-72 md:w-96 shadow-lg rounded-lg transition-transform duration-200 hover:shadow-xl hover:scale-105">
       <div>
@@ -22,12 +30,20 @@ export const ServiceCard = ({ services }) => {
 
         {/* <p className="text-center line-clamp-2">{services.description}</p> */}
 
-        <button
+       <div className="flex">
+       <button
           onClick={ReadMore}
           className="mt-2 border bg-blue-400 text-white rounded-lg p-2 sm:p-3 transition duration-200 hover:bg-blue-500"
         >
           Read More
         </button>
+        <button
+          onClick={TakeService}
+          className="mx-3 mt-2 border bg-blue-400 text-white rounded-lg p-2 sm:p-3 transition duration-200 hover:bg-blue-500"
+        >
+          Take Service
+        </button>
+       </div>
       </div>
     </div>
   );

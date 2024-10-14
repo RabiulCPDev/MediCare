@@ -20,6 +20,7 @@ const ServiceForm = ({ serviceData, onSuccess, onCancel }) => {
                 service_id: '',
                 url: '',
                 description: '',
+                fee:'',
             });
         }
     }, [serviceData]);
@@ -80,6 +81,17 @@ const ServiceForm = ({ serviceData, onSuccess, onCancel }) => {
                     type="text"
                     id="url"
                     value={formData.url}
+                    onChange={handleChange}
+                    required
+                    className="border rounded px-2 py-1 w-full"
+                />
+            </div>
+            <div>
+                <label>Service Fee:</label>
+                <input
+                    type="text"
+                    id="fee"
+                    value={formData.fee}
                     onChange={handleChange}
                     required
                     className="border rounded px-2 py-1 w-full"
