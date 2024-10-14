@@ -86,11 +86,11 @@ export const router = createBrowserRouter([
           element: <DepartmentProfile/>
         },
         {
-          path: 'userSettings',
+          path: 'userSettings/:id',
           element: <UserSettings/>
         },
         {
-          path:'/account',
+          path:'account/:id',
           element:<UserAccount/>
         },{
           path: 'doctor/:id',

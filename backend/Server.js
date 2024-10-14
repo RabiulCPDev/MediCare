@@ -50,6 +50,30 @@ app.get('/api/user/data', Authentication, async (req, res) => {
     }
 });
 
+// Update user image
+app.put('/api/user/updateProfileImage/:id', async (req, res) => {
+    const { id } = req.params;
+    const { image_url } = req.body;
+    try {
+        const user = await userModel.findByIdAndUpdate(id, { user_url: image_url }, { new: true });
+        res.status(200).json(user);
+    } catch (error) {
+        res.status(500).json({ message: 'Error updating profile image', error });
+    }
+});
+// delete the url of profile
+app.put('/api/user/removeProfileImage/:id', async (req, res) => {
+    try {
+        const userId = req.params.id;
+        await userModel.findByIdAndUpdate(userId, { user_url: null });
+        res.status(200).send('Profile image URL removed');
+    } catch (error) {
+        res.status(500).send('Error removing profile image URL');
+    }
+});
+
+
+
 app.get('/api/admin/users', async (req, res) => {
     try {
         const users = await userModel.find();

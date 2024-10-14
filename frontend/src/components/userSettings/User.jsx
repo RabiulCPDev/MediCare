@@ -14,7 +14,7 @@ const User = () => {
         } else {
             fetchUserData(token);
         }
-    }, [navigate]);
+    }, [navigate,user]);
 
     const fetchUserData = async (token) => {
         try {
@@ -23,10 +23,11 @@ const User = () => {
                     'Authorization': `Bearer ${token}`,
                 },
             });
+            console.log(response.data.user.user_url);
             setUser(response.data.user);
         } catch (error) {
             console.error('Error fetching user data:', error);
-            navigate('/login');
+            navigate('/');
         }
     };
 
@@ -40,13 +41,13 @@ const User = () => {
     };
 
     const handleSettingsClick = () => {
-
-        navigate('/UserSettings', { state: { user } });
+        setDropdownOpen(false);
+        navigate(`/UserSettings/${user._id}`, { state: { user } });
     };
 
     const handleAccountClick = () => {
-
-        navigate('/account', { state: { user } });
+        setDropdownOpen(false);
+        navigate(`/account/${user._id}`, { state: { user } });
     };
 
     useEffect(() => {
@@ -63,19 +64,30 @@ const User = () => {
         return () => {
             document.removeEventListener('click', handleClickOutside);
         };
-    }, [isDropdownOpen]);
+    }, [isDropdownOpen,navigate]);
 
     return (
-        <div className="relative profile-dropdown">
-            <div>
-                <img
-                    src={user?.user_url || 'https://via.placeholder.com/150'}
-                    alt={`${user?.fname} ${user?.lname}`}
-                    className="w-14 h-14 rounded-full p-2 cursor-pointer"
-                    onClick={handleProfileClick} 
-                />
-            </div>
-
+        <div className="profile-dropdown">
+             <div>
+                {user ? (
+                 
+                        <img
+                        src={user.user_url || 'https://via.placeholder.com/150'}
+                        alt={`${user.fname} ${user.lname}`}
+                        className="w-12 h-12 rounded-full cursor-pointer"
+                        onClick={handleProfileClick}
+                    />
+                   
+                ) : (
+                    <img
+                        src='https://via.placeholder.com/150'
+                        alt="Default User"
+                        className="w-12 h-12 rounded-full cursor-pointer"
+                        onClick={handleProfileClick}
+                    />
+                )}
+            </div> 
+    
             {isDropdownOpen && (
                 <div className="absolute top-12 right-1 bg-white shadow-lg rounded-lg overflow-hidden z-50">
                     <ul className="text-gray-700">
@@ -102,6 +114,6 @@ const User = () => {
             )}
         </div>
     );
-};
+}    
 
 export default User;
