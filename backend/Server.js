@@ -220,6 +220,19 @@ app.get('/api/user/appointments/:id', async (req, res) => {
     }
 });
 
+// user Services
+app.get('/api/user/services/:id', async (req, res) => {
+    const user_id = req.params.id;
+    try {
+        const services = await servicePayModel.find({ user_id }); 
+        if (!services.length) {
+            return res.status(404).json({ message: "No service found" });
+        }
+        res.status(200).json(services);
+    } catch (error) {
+        res.status(500).json({ message: "Error fetching services", error });
+    }
+});
 
 app.post('/api/user/appointment',async(req,res)=>{
     try{
@@ -611,7 +624,7 @@ const store_passwd = process.env.STORE_PASSWORD;
 const is_live = false;
 
 app.post('/api/payment', async (req, res) => {
-    const { doctor_id, customer_id, fee,app_time,app_date } = req.body;
+    const { doctor_id, customer_id, fee,app_time,app_date,doctor_name } = req.body;
     const tid = new ObjectId().toString(); 
     
     const data = {
@@ -653,6 +666,7 @@ app.post('/api/payment', async (req, res) => {
            
             const appointment = new appointmentModel({
                 doctor_id: doctor_id,
+                doctor_name:doctor_name,
                 user_id: customer_id, 
                 app_time:app_time,
                 app_date:app_date,

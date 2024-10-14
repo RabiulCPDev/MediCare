@@ -3,6 +3,7 @@ const mongoose = require('mongoose');
 
 const appointmentModel = new mongoose.Schema({
     doctor_id:{ type: String,required: true},
+    doctor_name:{type:String,require:true},
     user_id:{ type: String,required: true},
     app_time:{type:String},
     app_date: {type:Date},

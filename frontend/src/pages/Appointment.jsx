@@ -28,7 +28,7 @@ export const Appointment = () => {
             setUser(response.data.user);
         } catch (error) {
             console.error('Error fetching user data:', error);
-            navigate('/login');
+            navigate('/');
         }
     };
 
@@ -44,6 +44,7 @@ export const Appointment = () => {
         try {
             const res = await axios.post('http://localhost:5000/api/payment', {
                 doctor_id: doctor._id,
+                doctor_name:doctor.fname+' '+doctor.lname,
                 customer_id: user._id,
                 fee: doctor.consultation_fee,
                 app_time: doctor.shift_time,
