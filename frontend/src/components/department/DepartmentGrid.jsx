@@ -17,10 +17,6 @@ export const DepartmentGrid = ({rows}) => {
     }
   };
 
-
-  if(rows!=='seeAll' && departments.length>6){
-        setDepartments (departments.slice(0, 6));
-  }
   
   return (
     <div className="gap-2 grid sm:grid-cols-1 md:grid-cols-3 px-14 my-4 justify-center">

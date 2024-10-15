@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import axios from 'axios';
+import ImageDownloader from '../../imageUpload/ImageUploader'; 
 
 const DoctorsForm = ({ doctor, onSuccess, onCancel }) => {
     const [doctorData, setDoctorData] = useState({
@@ -19,8 +20,8 @@ const DoctorsForm = ({ doctor, onSuccess, onCancel }) => {
         joining_date: '',
         employee_id: '',
         description: '',
-        url: '',
-        shift_time:'',
+        shift_time: '',
+        url: '', // We'll use this to store the uploaded image URL
     });
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
@@ -39,18 +40,17 @@ const DoctorsForm = ({ doctor, onSuccess, onCancel }) => {
     const handleSubmit = async (e) => {
         e.preventDefault();
         setLoading(true);
-        setError(null); 
+        setError(null);
 
         try {
             if (doctor) {
-                
                 await axios.put(`http://localhost:5000/api/admin/doctors/${doctor._id}`, doctorData);
                 alert('Doctor updated successfully.');
             } else {
                 await axios.post('http://localhost:5000/api/admin/doctor', doctorData);
                 alert('Doctor created successfully.');
             }
-            onSuccess(); 
+            onSuccess();
         } catch (error) {
             setError('Error saving doctor data: ' + error.message);
         } finally {
@@ -58,11 +58,16 @@ const DoctorsForm = ({ doctor, onSuccess, onCancel }) => {
         }
     };
 
+    const handleImageUpload = (url) => {
+        setDoctorData({ ...doctorData, url });
+    };
+
     return (
         <form onSubmit={handleSubmit} className="space-y-4">
             {loading && <p>Loading...</p>}
             {error && <p className="text-red-500">{error}</p>}
-            
+
+            {/* First Name */}
             <div>
                 <label>First Name:</label>
                 <input
@@ -75,6 +80,7 @@ const DoctorsForm = ({ doctor, onSuccess, onCancel }) => {
                 />
             </div>
 
+            {/* Last Name */}
             <div>
                 <label>Last Name:</label>
                 <input
@@ -86,6 +92,7 @@ const DoctorsForm = ({ doctor, onSuccess, onCancel }) => {
                 />
             </div>
 
+            {/* Email */}
             <div>
                 <label>Email:</label>
                 <input
@@ -98,6 +105,7 @@ const DoctorsForm = ({ doctor, onSuccess, onCancel }) => {
                 />
             </div>
 
+            {/* Phone */}
             <div>
                 <label>Phone:</label>
                 <input
@@ -110,6 +118,7 @@ const DoctorsForm = ({ doctor, onSuccess, onCancel }) => {
                 />
             </div>
 
+            {/* Gender */}
             <div>
                 <label>Gender:</label>
                 <select
@@ -125,6 +134,7 @@ const DoctorsForm = ({ doctor, onSuccess, onCancel }) => {
                 </select>
             </div>
 
+            {/* Specialization */}
             <div>
                 <label>Specialization:</label>
                 <input
@@ -137,6 +147,7 @@ const DoctorsForm = ({ doctor, onSuccess, onCancel }) => {
                 />
             </div>
 
+            {/* License Number */}
             <div>
                 <label>License Number:</label>
                 <input
@@ -149,6 +160,7 @@ const DoctorsForm = ({ doctor, onSuccess, onCancel }) => {
                 />
             </div>
 
+            {/* Years of Experience */}
             <div>
                 <label>Years of Experience:</label>
                 <input
@@ -160,6 +172,7 @@ const DoctorsForm = ({ doctor, onSuccess, onCancel }) => {
                 />
             </div>
 
+            {/* Qualifications */}
             <div>
                 <label>Qualifications (comma-separated):</label>
                 <input
@@ -171,6 +184,7 @@ const DoctorsForm = ({ doctor, onSuccess, onCancel }) => {
                 />
             </div>
 
+            {/* Consultation Fee */}
             <div>
                 <label>Consultation Fee:</label>
                 <input
@@ -182,6 +196,7 @@ const DoctorsForm = ({ doctor, onSuccess, onCancel }) => {
                 />
             </div>
 
+            {/* Department */}
             <div>
                 <label>Department:</label>
                 <input
@@ -193,6 +208,7 @@ const DoctorsForm = ({ doctor, onSuccess, onCancel }) => {
                 />
             </div>
 
+            {/* Room Number */}
             <div>
                 <label>Room Number:</label>
                 <input
@@ -204,6 +220,7 @@ const DoctorsForm = ({ doctor, onSuccess, onCancel }) => {
                 />
             </div>
 
+            {/* Address */}
             <div>
                 <label>Address:</label>
                 <input
@@ -215,6 +232,7 @@ const DoctorsForm = ({ doctor, onSuccess, onCancel }) => {
                 />
             </div>
 
+            {/* Joining Date */}
             <div>
                 <label>Joining Date:</label>
                 <input
@@ -226,6 +244,7 @@ const DoctorsForm = ({ doctor, onSuccess, onCancel }) => {
                 />
             </div>
 
+            {/* Employee ID */}
             <div>
                 <label>Employee ID:</label>
                 <input
@@ -237,6 +256,7 @@ const DoctorsForm = ({ doctor, onSuccess, onCancel }) => {
                 />
             </div>
 
+            {/* Description */}
             <div>
                 <label>Description:</label>
                 <textarea
@@ -247,19 +267,9 @@ const DoctorsForm = ({ doctor, onSuccess, onCancel }) => {
                 />
             </div>
 
+            {/* Shift Time */}
             <div>
-                <label>Profile URL:</label>
-                <input
-                    type="text"
-                    id="url"
-                    value={doctorData.url}
-                    onChange={handleChange}
-                    className="border rounded px-2 py-1 w-full"
-                />
-            </div>
-
-            <div>
-                <label>Shift_Time:</label>
+                <label>Shift Time:</label>
                 <input
                     type="text"
                     id="shift_time"
@@ -269,6 +279,13 @@ const DoctorsForm = ({ doctor, onSuccess, onCancel }) => {
                 />
             </div>
 
+            {/* Profile Image Upload */}
+            <div>
+                <label>Profile Image:</label>
+                <ImageDownloader onUploadSuccess={handleImageUpload} />
+            </div>
+
+            {/* Submit and Cancel Buttons */}
             <div className="flex space-x-4">
                 <button type="submit" className="bg-blue-500 text-white px-3 py-1 rounded" disabled={loading}>
                     {doctor ? 'Update Doctor' : 'Create Doctor'}

@@ -1,11 +1,12 @@
 import { useState, useEffect } from 'react';
 import axios from 'axios';
+import ImageUploader from '../../imageUpload/ImageUploader';  
 
 const DepartmentForm = ({ departmentData, onSuccess, onCancel }) => {
     const [formData, setFormData] = useState({
         name: '',
         department_id: '',
-        url: '',
+        url: '',  // Ensure that the URL field is in the form data
         description: '',
     });
     const [loading, setLoading] = useState(false);
@@ -24,11 +25,21 @@ const DepartmentForm = ({ departmentData, onSuccess, onCancel }) => {
         }
     }, [departmentData]);
 
+    // Handle form input changes
     const handleChange = (e) => {
         const { id, value } = e.target;
         setFormData({ ...formData, [id]: value });
     };
 
+    // Function to update the URL after image upload
+    const handleImageUploadSuccess = (url) => {
+        setFormData((prevData) => ({
+            ...prevData,
+            url: url,  // Set the uploaded image URL in the form data
+        }));
+    };
+
+    // Handle form submission
     const handleSubmit = async (e) => {
         e.preventDefault();
         setLoading(true);
@@ -40,7 +51,7 @@ const DepartmentForm = ({ departmentData, onSuccess, onCancel }) => {
                 await axios.post('http://localhost:5000/api/admin/departments', formData);
                 alert('Department created successfully.');
             }
-            onSuccess(); // Call success handler after submission
+            onSuccess();
         } catch (error) {
             setError('Error saving department data: ' + error.message);
         } finally {
@@ -52,6 +63,8 @@ const DepartmentForm = ({ departmentData, onSuccess, onCancel }) => {
         <form onSubmit={handleSubmit} className="space-y-4">
             {loading && <p>Loading...</p>}
             {error && <p className="text-red-500">{error}</p>}
+
+            {/* Department Name */}
             <div>
                 <label>Department Name:</label>
                 <input
@@ -63,6 +76,8 @@ const DepartmentForm = ({ departmentData, onSuccess, onCancel }) => {
                     className="border rounded px-2 py-1 w-full"
                 />
             </div>
+
+            {/* Department ID */}
             <div>
                 <label>Department ID:</label>
                 <input
@@ -74,17 +89,14 @@ const DepartmentForm = ({ departmentData, onSuccess, onCancel }) => {
                     className="border rounded px-2 py-1 w-full"
                 />
             </div>
+
+            {/* Image Upload */}
             <div>
-                <label>URL:</label>
-                <input
-                    type="text"
-                    id="url"
-                    value={formData.url}
-                    onChange={handleChange}
-                    required
-                    className="border rounded px-2 py-1 w-full"
-                />
+                <label>Upload Department Image:</label>
+                <ImageUploader onUploadSuccess={handleImageUploadSuccess} />
             </div>
+
+            {/* Description */}
             <div>
                 <label>Description:</label>
                 <textarea
@@ -95,6 +107,8 @@ const DepartmentForm = ({ departmentData, onSuccess, onCancel }) => {
                     className="border rounded px-2 py-1 w-full"
                 />
             </div>
+
+            {/* Submit and Cancel buttons */}
             <div className="flex space-x-4">
                 <button type="submit" className="bg-blue-500 text-white px-3 py-1 rounded" disabled={loading}>
                     {departmentData && departmentData._id ? 'Update Department' : 'Create Department'}

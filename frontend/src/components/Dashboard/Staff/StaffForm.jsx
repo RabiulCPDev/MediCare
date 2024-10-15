@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import axios from 'axios';
+import ImageUploader from '../../imageUpload/ImageUploader'; // Assuming ImageUploader handles image upload
 
 const StaffForm = ({ staffData, onSuccess, onCancel }) => {
     const [formData, setFormData] = useState({
@@ -60,6 +61,10 @@ const StaffForm = ({ staffData, onSuccess, onCancel }) => {
         } finally {
             setLoading(false);
         }
+    };
+
+    const handleImageUpload = (url) => {
+        setFormData({ ...formData, url }); // Update the form with the uploaded image URL
     };
 
     return (
@@ -174,16 +179,13 @@ const StaffForm = ({ staffData, onSuccess, onCancel }) => {
                     className="border rounded px-2 py-1 w-full"
                 />
             </div>
+
+            {/* Image Uploader */}
             <div>
-                <label>Profile URL:</label>
-                <input
-                    type="text"
-                    id="url"
-                    value={formData.url}
-                    onChange={handleChange}
-                    className="border rounded px-2 py-1 w-full"
-                />
+                <label>Upload Profile Image:</label>
+                <ImageUploader onUploadSuccess={handleImageUpload} />
             </div>
+
             <div className="flex space-x-4">
                 <button type="submit" className="bg-blue-500 text-white px-3 py-1 rounded" disabled={loading}>
                     {staffData && staffData._id ? 'Update Staff' : 'Create Staff'}

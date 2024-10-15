@@ -19,6 +19,7 @@ const adminAuthentication = require('./middleware/adminAuthenticate')
 const SSLCommerzPayment = require('sslcommerz-lts')
 const { ObjectId } = require('mongodb');
 const servicePayModel = require('./model/servicePayModel');
+const prescriptionModel = require('./model/prescriptionModel');
 
 app.use(express.json());
 app.use(cors());
@@ -304,6 +305,15 @@ app.post('/api/admin/staffs', async (req, res) => {
     }
 });
 
+app.get('/api/admin/doctors',async(req,res)=>{
+    try{
+        const doctors = await doctorModel.find();
+       
+        res.status(200).json(doctors);
+    }catch(error){
+        res.status(500).json({message:"No doctor found",error});
+    }
+})
 
 app.put('/api/admin/staffs/:id', async (req, res) => {
     const staffId = req.params.id;
@@ -567,10 +577,10 @@ app.delete('/api/admin/services/:id', async (req, res) => {
 });
 
 app.post('/api/admin/register', async (req, res) => {
-    const { username, password } = req.body;
+    const { username, password,role,admin_id } = req.body;
     const hashPass = await bcrypt.hash(password, parseInt(process.env.Hash_Salt));
     try {
-        const newAdmin = new adminModel({ username, password: hashPass }); 
+        const newAdmin = new adminModel({ username, password: hashPass ,role,admin_id});
         await newAdmin.save();
         res.status(201).json({ message: 'Admin registered successfully' });
     } catch (error) {
@@ -826,11 +836,82 @@ app.post('/cancel', async (req, res) => {
 });
 
 
+
+
+// Appointment and Lab Report
+
+app.get('/api/admin/appointments/:doctor_id', async (req, res) => {
+    const doctor_id = req.params.doctor_id;
+
+    try {
+        const appointments = await appointmentModel.find({ doctor_id });
+        res.status(200).json(appointments);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: 'Failed to fetch appointments' });
+    }
+});
+
+
+app.post('/api/doctor/prescriptions', async (req, res) => {
+    const { user_id, doctor_id, medicines ,pre_url} = req.body;
+
+    try {
+        const prescription = new prescriptionModel({
+            user_id,
+            doctor_id,
+            medicine: medicines,
+            pre_url:pre_url
+        });
+        
+        await prescription.save();
+       await appointmentModel.deleteOne({ doctor_id: doctor_id,user_id:user_id });
+        res.status(201).json({ message: "Prescription saved successfully!" });
+    } catch (error) {
+        console.error("Error saving prescription:", error);
+        res.status(400).json({ error: "Error saving prescription" });
+    }
+});
+
+// For pdf
+app.get('/api/user/:userId', async (req, res) => {
+    const { userId } = req.params; 
+
+    try {
+        const user = await userModel.findById(userId); // No need to wrap userId in an object
+        if (!user) {
+            return res.status(404).json({ message: 'User not found' });
+        }
+        res.status(200).json(user); 
+    } catch (error) {
+        console.error('Error fetching user:', error);
+        res.status(500).json({ message: 'Failed to fetch user details', error });
+    }
+});
+
+
+app.get('/api/doctor/:doctorId', async (req, res) => {
+    const { doctorId } = req.params; // Extract doctorId from request params
+
+    try {
+        const doctor = await doctorModel.findById(doctorId); // Fetch doctor from DB
+        if (!doctor) {
+            return res.status(404).json({ message: 'Doctor not found' });
+        }
+        res.status(200).json(doctor); // Send doctor details as response
+    } catch (error) {
+        console.error('Error fetching doctor:', error);
+        res.status(500).json({ message: 'Failed to fetch doctor details', error });
+    }
+});
+
+
 app.listen(port, () => {
     console.log(`Server is running on port ${port}`);
 });
 
 
 // server.js
+
 
 

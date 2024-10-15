@@ -92,6 +92,7 @@ export const UserAccount = () => {
             try {
                 const res = await axios.get(`http://localhost:5000/api/user/appointments/${user._id}`);
                 const response = await axios.get(`http://localhost:5000/api/user/services/${user._id}`);
+                
                 setAppointment(res.data);
                 setService(response.data);
             } catch (error) {

@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from 'react'; 
+import { Link } from 'react-router-dom';
 
 export const Topbar = ({setActiveSection}) => {
     const [isDropdownOpen, setIsDropdownOpen] = useState(false);
@@ -22,7 +23,13 @@ export const Topbar = ({setActiveSection}) => {
 
     return (
         <nav className="bg-white p-4 shadow-md flex justify-between items-center relative z-50">
-            <h1 className="text-2xl font-semibold">Admin Dashboard</h1>
+           <Link to={'/admin/dashboard'}
+                        onClick={() => {
+                                setIsDropdownOpen(false);
+                                setActiveSection('default')
+                            }}>
+             <h1 className="text-2xl font-semibold">Admin Dashboard</h1>
+           </Link>
             
             <div className="relative flex items-center" ref={dropdownRef}>
                 <img

@@ -1,12 +1,13 @@
 import { useState, useEffect } from 'react';
 import axios from 'axios';
-
+import ImageUploader from '../../imageUpload/ImageUploader'; 
 const ServiceForm = ({ serviceData, onSuccess, onCancel }) => {
     const [formData, setFormData] = useState({
         name: '',
         service_id: '',
         url: '',
         description: '',
+        fee: '',
     });
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
@@ -20,7 +21,7 @@ const ServiceForm = ({ serviceData, onSuccess, onCancel }) => {
                 service_id: '',
                 url: '',
                 description: '',
-                fee:'',
+                fee: '',
             });
         }
     }, [serviceData]);
@@ -47,6 +48,10 @@ const ServiceForm = ({ serviceData, onSuccess, onCancel }) => {
         } finally {
             setLoading(false);
         }
+    };
+
+    const handleImageUpload = (url) => {
+        setFormData({ ...formData, url }); // Update the form with the uploaded image URL
     };
 
     return (
@@ -76,17 +81,6 @@ const ServiceForm = ({ serviceData, onSuccess, onCancel }) => {
                 />
             </div>
             <div>
-                <label>URL:</label>
-                <input
-                    type="text"
-                    id="url"
-                    value={formData.url}
-                    onChange={handleChange}
-                    required
-                    className="border rounded px-2 py-1 w-full"
-                />
-            </div>
-            <div>
                 <label>Service Fee:</label>
                 <input
                     type="text"
@@ -107,6 +101,13 @@ const ServiceForm = ({ serviceData, onSuccess, onCancel }) => {
                     className="border rounded px-2 py-1 w-full"
                 />
             </div>
+
+            {/* Image Uploader */}
+            <div>
+                <label>Upload Service Image:</label>
+                <ImageUploader onUploadSuccess={handleImageUpload} />
+            </div>
+
             <div className="flex space-x-4">
                 <button type="submit" className="bg-blue-500 text-white px-3 py-1 rounded" disabled={loading}>
                     {serviceData && serviceData._id ? 'Update Service' : 'Create Service'}

@@ -30,7 +30,7 @@ export const HomePage = () => {
                       Our Departments
                   </h1>
                   <h1 className="text-right text-3xl sm:text-4xl font-semibold text-blue-900">
-                      <Link to={'/doctors'}>
+                      <Link to={'/departments'}>
                           See All Departments
                       </Link>
                   </h1>
