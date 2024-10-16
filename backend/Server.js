@@ -20,6 +20,7 @@ const SSLCommerzPayment = require('sslcommerz-lts')
 const { ObjectId } = require('mongodb');
 const servicePayModel = require('./model/servicePayModel');
 const prescriptionModel = require('./model/prescriptionModel');
+const labreportModel = require('./model/labreportModel');
 
 app.use(express.json());
 app.use(cors());
@@ -968,6 +969,52 @@ app.get('/api/admin/appointments', async (req, res) => {
     } catch (error) {
         console.error("Error saving prescription:", error);
         res.status(400).json({ error: "Error saving prescription" });
+    }
+});
+
+
+
+
+
+// LabReport
+
+app.post('/api/labreports', async (req, res) => {
+    const { doctor_name, user_id, technician_id, test, date } = req.body;
+
+    // Ensure required fields are provided
+    if (!doctor_name || !user_id || !test || !test.length) {
+        return res.status(400).json({ error: 'Missing required fields' });
+    }
+
+    try {
+        // Create a new lab report document
+        const newLabReport = new labreportModel({
+            doctor_name,
+            user_id,
+            technician_id,
+            test,
+            date: date || Date.now() // Use current date if no date provided
+        });
+
+        // Save the lab report to the database
+        await newLabReport.save();
+
+        res.status(201).json({ message: 'Lab report created successfully', labReport: newLabReport });
+    } catch (error) {
+        console.error('Error creating lab report:', error);
+        res.status(500).json({ error: 'Failed to create lab report' });
+    }
+});
+
+app.get('/api/labreports/user/:userId', async (req, res) => {
+    const id =req.params.userId;
+    try {
+        const labReport = await labreportModel.find({ user_id:id });
+        if (!labReport) return res.status(200).json({ message: 'Lab report not found' });
+        res.status(200).json(labReport);
+    } catch (error) {
+        console.error('Error fetching lab report', error);
+        res.status(500).json({ error: 'Failed to fetch lab report' });
     }
 });
 

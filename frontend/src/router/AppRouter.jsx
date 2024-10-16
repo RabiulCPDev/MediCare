@@ -24,6 +24,7 @@ import { Ambulance } from "../pages/Ambulance";
 import { ServicePayment } from "../components/Services/ServicePayment";
 import { AppointmentServices } from "../components/userSettings/AppointmentServices";
 import { Prescription } from "../components/userSettings/Prescription";
+import { LabReport } from "../components/userSettings/LabReport";
 
 export const router = createBrowserRouter([
     {
@@ -94,6 +95,10 @@ export const router = createBrowserRouter([
         {
           path: 'prescriptions/:id',
           element: <Prescription />
+        },
+        {
+          path: 'labreports/:id',
+          element: <LabReport/>
         },
         {
           path: 'appointments/:id',
