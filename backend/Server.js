@@ -1046,14 +1046,14 @@ app.get('/api/technician/labtests/:Id', async (req, res) => {
 
 app.put('/api/technician/labtests/:Id', async (req, res) => {
     const id = req.params.Id; // Get the lab report ID from the URL parameters
-    const { technician_id, tests } = req.body; // Get technician_id and tests from request body
+    const { technician_id, test } = req.body; // Destructure technician_id and test from request body
 
     try {
         const updatedReport = await labreportModel.findByIdAndUpdate(
-           id,
+            id,
             {
-                technician_id, // Update technician ID
-                test: tests, // Update test results
+                technician_id: technician_id, // Update technician ID
+                test: test, // Update test results
                 status: true, // Mark report as completed
             },
             { new: true } // Return the updated document

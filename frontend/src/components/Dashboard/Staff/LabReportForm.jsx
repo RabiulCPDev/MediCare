@@ -11,13 +11,18 @@ export const LabReportForm = ({ technicianId, userId, testId, onReportSaved }) =
         const fetchLabReport = async () => {
             try {
                 const response = await axios.get(`http://localhost:5000/api/technician/labtests/${testId}`);
-                // Initialize results to an empty string if not provided
-                const fetchedTests = response.data.test.map(test => ({ ...test, result: '' }));
-                setTests(fetchedTests); 
-                setLoading(false);
+                // Ensure 'test' is present in the response
+                if (response.data.test) {
+                    // Initialize tests with name and an empty result
+                    const fetchedTests = response.data.test.map(test => ({ name: test, result: '' }));
+                    setTests(fetchedTests);
+                } else {
+                    setError("No tests found.");
+                }
             } catch (error) {
-                console.error(error); // Log the error for debugging
+                console.error("Error fetching lab report:", error);
                 setError("Failed to load lab report data. Please try again.");
+            } finally {
                 setLoading(false);
             }
         };
@@ -29,7 +34,7 @@ export const LabReportForm = ({ technicianId, userId, testId, onReportSaved }) =
     const handleResultChange = (index, result) => {
         const updatedTests = [...tests];
         updatedTests[index].result = result; // Update the result for the test
-        console.log(updatedTests);
+        console.log(updatedTests + " UPDATED");
         setTests(updatedTests);
     };
 
@@ -41,14 +46,15 @@ export const LabReportForm = ({ technicianId, userId, testId, onReportSaved }) =
         const reportData = {
             technician_id: technicianId,
             status: true,
-            test: tests.map(t => `${t.name} - ${t.result}`), // Update format as 'Test Name - Result'
+            test: tests.map(t => `${t.name} - ${t.result}`), // Format as 'Test Name - Result'
         };
 
         try {
-            await axios.put(`http://localhost:5000/api/technician/labtests/${testId}`, reportData); // Update the lab report
-            onReportSaved(); // Notify parent component on successful save
+            await axios.put(`http://localhost:5000/api/technician/labtests/${testId}`, reportData);
+            console.log(reportData)
+            onReportSaved();
         } catch (error) {
-            console.error(error); // Log the error for debugging
+            console.error("Error submitting lab report:", error);
             setError("Error submitting the lab report. Please try again.");
         } finally {
             setLoading(false);
@@ -70,12 +76,12 @@ export const LabReportForm = ({ technicianId, userId, testId, onReportSaved }) =
                     <input
                         type="text"
                         className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                        value={test.result} // Show the result if it exists, otherwise empty string
+                        value={test.result} // Show the result if it exists
                         onChange={(e) => handleResultChange(index, e.target.value)}
                         placeholder={`Enter result for ${test.name}`}
                         required
-                        disabled={loading} // Disable input while loading
-                        aria-label={`Result for ${test.name}`} // Add accessibility label
+                        disabled={loading}
+                        aria-label={`Result for ${test.name}`}
                     />
                 </div>
             ))}
