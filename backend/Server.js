@@ -1010,13 +1010,66 @@ app.get('/api/labreports/user/:userId', async (req, res) => {
     const id =req.params.userId;
     try {
         const labReport = await labreportModel.find({ user_id:id });
-        if (!labReport) return res.status(200).json({ message: 'Lab report not found' });
         res.status(200).json(labReport);
     } catch (error) {
         console.error('Error fetching lab report', error);
         res.status(500).json({ error: 'Failed to fetch lab report' });
     }
 });
+
+app.get('/api/technician/labtests', async (req, res) => {
+   
+    try {
+        // Assuming you have a method to find lab tests by technician ID
+        const labTests = await labreportModel.find({status:false});
+
+        res.status(200).json(labTests);
+    } catch (error) {
+        console.error('Error fetching lab tests:', error);
+        res.status(500).json({ error: 'An error occurred while fetching lab tests.' });
+    }
+});
+
+app.get('/api/technician/labtests/:Id', async (req, res) => {
+    const id = req.params.Id; // Get the lab test ID from the URL parameters
+    try {
+        const labTest = await labreportModel.findById(id); // Fetch the lab test by ID
+
+        console.log(labTest)
+        res.status(200).json(labTest); // Return the found lab test
+    } catch (error) {
+        console.error('Error fetching lab test:', error); // Log the error for debugging
+        res.status(500).json({ error: 'An error occurred while fetching lab tests.' }); // Handle server error
+    }
+});
+
+
+app.put('/api/technician/labtests/:Id', async (req, res) => {
+    const id = req.params.Id; // Get the lab report ID from the URL parameters
+    const { technician_id, tests } = req.body; // Get technician_id and tests from request body
+
+    try {
+        const updatedReport = await labreportModel.findByIdAndUpdate(
+           id,
+            {
+                technician_id, // Update technician ID
+                test: tests, // Update test results
+                status: true, // Mark report as completed
+            },
+            { new: true } // Return the updated document
+        );
+
+        if (!updatedReport) {
+            return res.status(404).json({ error: 'Lab report not found' });
+        }
+
+        return res.status(200).json(updatedReport); // Return the updated report
+    } catch (error) {
+        console.error(error); // Log the error for debugging
+        return res.status(500).json({ error: 'Failed to update lab report' });
+    }
+});
+
 
 app.listen(port, () => {
     console.log(`Server is running on port ${port}`);

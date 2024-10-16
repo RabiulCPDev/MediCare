@@ -11,7 +11,7 @@ import { AdminUpdateProfile } from './TopBar/AdminUpdateProfile';
 import { AdminAccount } from './TopBar/AdminAccount';
 import DoctorAppointments from './Doctor/DoctorAppointments';
 import axios from 'axios';
-import { LabReportForm } from './Staff/LabReportForm';
+import TechnicianLabTests from './Staff/TechnicianLabTests';
 
 export const Dashboard = () => {
     const navigate = useNavigate();
@@ -96,8 +96,8 @@ export const Dashboard = () => {
                 return <AdminUpdateProfile setActiveSection={setActiveSection} />;
             case 'adminAccount':
                 return <AdminAccount />;
-            case 'labReport': // For staff to create lab reports
-                return <LabReportForm onReportSubmitted={() => setActiveSection('')} />;
+            case 'labReport':
+                return <TechnicianLabTests technicianId={doctorId}/>;
             default:
                 return (
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">

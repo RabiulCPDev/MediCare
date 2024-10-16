@@ -1,58 +1,94 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 
-export const LabReportForm = ({ onReportSubmitted }) => {
-    const [patientId, setPatientId] = useState('');
-    const [reportDetails, setReportDetails] = useState('');
+export const LabReportForm = ({ technicianId, userId, testId, onReportSaved }) => {
+    const [tests, setTests] = useState([]);
+    const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
 
+    // Fetch the lab report with the test names when the form loads
+    useEffect(() => {
+        const fetchLabReport = async () => {
+            try {
+                const response = await axios.get(`http://localhost:5000/api/technician/labtests/${testId}`);
+                // Initialize results to an empty string if not provided
+                const fetchedTests = response.data.test.map(test => ({ ...test, result: '' }));
+                setTests(fetchedTests); 
+                setLoading(false);
+            } catch (error) {
+                console.error(error); // Log the error for debugging
+                setError("Failed to load lab report data. Please try again.");
+                setLoading(false);
+            }
+        };
+
+        fetchLabReport();
+    }, [testId]);
+
+    // Handle the result change for each test
+    const handleResultChange = (index, result) => {
+        const updatedTests = [...tests];
+        updatedTests[index].result = result; // Update the result for the test
+        console.log(updatedTests);
+        setTests(updatedTests);
+    };
+
+    // Handle form submission
     const handleSubmit = async (e) => {
         e.preventDefault();
+        setLoading(true);
+
+        const reportData = {
+            technician_id: technicianId,
+            status: true,
+            test: tests.map(t => `${t.name} - ${t.result}`), // Update format as 'Test Name - Result'
+        };
+
         try {
-            // Submit lab report data to the server
-            await axios.post('http://localhost:5000/api/staff/labReports', {
-                patient_id: patientId,
-                details: reportDetails,
-            });
-            alert("Lab report submitted!");
-            onReportSubmitted(); // Trigger any action after submission
+            await axios.put(`http://localhost:5000/api/technician/labtests/${testId}`, reportData); // Update the lab report
+            onReportSaved(); // Notify parent component on successful save
         } catch (error) {
-            setError('Failed to submit lab report. Please try again.');
+            console.error(error); // Log the error for debugging
+            setError("Error submitting the lab report. Please try again.");
+        } finally {
+            setLoading(false);
         }
     };
 
+    if (loading) return <div>Loading...</div>;
+    if (error) return <div className="text-red-500">{error}</div>;
+
     return (
-        <form onSubmit={handleSubmit} className="bg-white p-6 shadow-lg rounded-lg">
-            <h2 className="text-2xl font-semibold mb-4">Create Lab Report</h2>
+        <form onSubmit={handleSubmit} className="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4">
+            <h3 className="text-xl font-semibold mb-4">Complete Lab Report</h3>
 
-            {error && <div className="text-red-500 mb-4">{error}</div>}
+            {tests.map((test, index) => (
+                <div key={index} className="mb-4">
+                    <label className="block text-gray-700 text-sm font-bold mb-2">
+                        {test.name} (Enter result):
+                    </label>
+                    <input
+                        type="text"
+                        className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                        value={test.result} // Show the result if it exists, otherwise empty string
+                        onChange={(e) => handleResultChange(index, e.target.value)}
+                        placeholder={`Enter result for ${test.name}`}
+                        required
+                        disabled={loading} // Disable input while loading
+                        aria-label={`Result for ${test.name}`} // Add accessibility label
+                    />
+                </div>
+            ))}
 
-            <div className="mb-4">
-                <label className="block text-sm font-medium mb-2" htmlFor="patientId">Patient ID</label>
-                <input
-                    type="text"
-                    id="patientId"
-                    className="w-full p-2 border border-gray-300 rounded-md"
-                    value={patientId}
-                    onChange={(e) => setPatientId(e.target.value)}
-                    required
-                />
+            <div className="flex items-center justify-between">
+                <button
+                    type="submit"
+                    className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+                    disabled={loading}
+                >
+                    {loading ? 'Submitting...' : 'Submit Results'}
+                </button>
             </div>
-
-            <div className="mb-4">
-                <label className="block text-sm font-medium mb-2" htmlFor="reportDetails">Report Details</label>
-                <textarea
-                    id="reportDetails"
-                    className="w-full p-2 border border-gray-300 rounded-md"
-                    value={reportDetails}
-                    onChange={(e) => setReportDetails(e.target.value)}
-                    required
-                />
-            </div>
-
-            <button type="submit" className="bg-green-500 text-white px-4 py-2 rounded-md">
-                Submit Report
-            </button>
         </form>
     );
 };

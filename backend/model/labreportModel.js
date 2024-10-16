@@ -6,7 +6,8 @@ const labreportModel = new mongoose.Schema({
     user_id: { type: String, required: true },
     technician_id: { type: String },
     test: { type: [String], required: true },
-    date: { type: Date, default: Date.now }
+    date: { type: Date, default: Date.now },
+    status:{type:Boolean,default:false},
 });
 
 module.exports = mongoose.model('labreport', labreportModel );
