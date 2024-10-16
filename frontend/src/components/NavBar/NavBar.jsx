@@ -10,7 +10,7 @@ export const NavBar = () => {
     
     useEffect(() => {
         if (!token) {
-            navigate('/login');
+            navigate('/');
         }
     }, []);
 

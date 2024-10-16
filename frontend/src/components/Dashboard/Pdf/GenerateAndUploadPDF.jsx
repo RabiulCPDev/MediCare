@@ -1,6 +1,6 @@
 import { PDFDocument, rgb } from 'pdf-lib';
 import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
-import axios from 'axios'; // For making backend requests
+import axios from 'axios'; 
 
 export const GenerateAndUploadPDF = async ({ doctorId, userId, medicines }) => {
     try {
@@ -8,9 +8,9 @@ export const GenerateAndUploadPDF = async ({ doctorId, userId, medicines }) => {
         const doctorRes = await axios.get(`http://localhost:5000/api/doctor/${doctorId}`);
         const userRes = await axios.get(`http://localhost:5000/api/user/${userId}`);
         
-        const doctorName = `${doctorRes.data.firstName} ${doctorRes.data.lastName}`;
+        const doctorName = `${doctorRes.data.fname} ${doctorRes.data.lname}`;
         const doctorSpecialization = doctorRes.data.specialization;
-        const userName = `${userRes.data.firstName} ${userRes.data.lastName}`;
+        const userName = `${userRes.data.fname} ${userRes.data.lname}`;
         const userAge = userRes.data.age;
 
         // 2. Create a new PDF Document

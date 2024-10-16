@@ -22,6 +22,8 @@ import PaymentStatus from "../components/payment/PaymentStatus";
 import { Hotline } from "../components/hero/Hotline";
 import { Ambulance } from "../pages/Ambulance";
 import { ServicePayment } from "../components/Services/ServicePayment";
+import { AppointmentServices } from "../components/userSettings/AppointmentServices";
+import { Prescription } from "../components/userSettings/Prescription";
 
 export const router = createBrowserRouter([
     {
@@ -88,6 +90,14 @@ export const router = createBrowserRouter([
         {
           path: 'userSettings/:id',
           element: <UserSettings/>
+        },
+        {
+          path: 'prescriptions/:id',
+          element: <Prescription />
+        },
+        {
+          path: 'appointments/:id',
+          element: <AppointmentServices />
         },
         {
           path:'account/:id',

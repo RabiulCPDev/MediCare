@@ -223,7 +223,7 @@ app.get('/',(req,res)=>{
 app.get('/api/doctors',async(req,res)=>{
     try{
         const doctors = await doctorModel.find();
-        console.log(doctors)
+        // console.log(doctors)
         res.status(200).json(doctors);
     }catch(error){
         res.status(500).json({message:"No doctor found",error});
@@ -234,47 +234,69 @@ app.get('/api/doctors',async(req,res)=>{
 
 app.get('/api/user/appointments/:id', async (req, res) => {
     const user_id = req.params.id;
+    console.log(user_id);
+    // Check if user_id is valid
+    if (!user_id) {
+        return res.status(400).json({ message: "User ID is required." });
+    }
+
+    // Validate if user_id is a valid MongoDB ObjectId (optional)
+    // if (!mongoose.Types.ObjectId.isValid(user_id)) {
+    //     return res.status(400).json({ message: "Invalid User ID format." });
+    // }
+
     try {
-        const appointments = await appointmentModel.find({ user_id }); 
+        const appointments = await appointmentModel.find({ user_id });
+
         if (!appointments.length) {
-            return res.status(404).json({ message: "No appointments found" });
+            console.log("No appointments found for this user")
+            return res.status(200).json({ message: "No appointments found for this user." });
         }
+        console.log(appointments)
         res.status(200).json(appointments);
     } catch (error) {
-        res.status(500).json({ message: "Error fetching appointments", error });
+        console.error("Error fetching appointments:", error);
+        res.status(500).json({ message: "Error fetching appointments.", error: error.message });
     }
 });
 
-// user Services
+// Fetch user services
 app.get('/api/user/services/:id', async (req, res) => {
     const user_id = req.params.id;
+    console.log(user_id);
+    // Check if user_id is valid
+    if (!user_id) {
+        return res.status(400).json({ message: "User ID is required." });
+    }
+
+    // Validate if user_id is a valid MongoDB ObjectId (optional)
+    // if (!mongoose.Types.ObjectId.isValid(user_id)) {
+    //     return res.status(400).json({ message: "Invalid User ID format." });
+    // }
+
     try {
-        const services = await servicePayModel.find({ user_id }); 
+        const services = await servicePayModel.find({ user_id });
+
         if (!services.length) {
-            return res.status(404).json({ message: "No service found" });
+            return res.status(200).json({ message: "No services found for this user." });
         }
+
         res.status(200).json(services);
     } catch (error) {
-        res.status(500).json({ message: "Error fetching services", error });
+        console.error("Error fetching services:", error);
+        res.status(500).json({ message: "Error fetching services.", error: error.message });
     }
 });
 
-app.post('/api/user/appointment',async(req,res)=>{
-    try{
-        const appointment= new appointmentModel(req.body);
-        await appointment.save();
-        res.status(200).json(appointment);
-    }catch(error){
-        res.status(500).json({message:"No appointment created",error});
-    }
-})
+
+
 
 
 
 app.get('/api/departments',async(req,res)=>{
     try{
         const department = await departmentModel.find();
-        console.log(department)
+        // console.log(department)
         res.status(200).json(department);
     }catch(error){
         res.status(500).json({message:"No department found",error});
@@ -284,7 +306,7 @@ app.get('/api/departments',async(req,res)=>{
 app.get('/api/services',async(req,res)=>{
     try{
         const services = await serviceModel.find();
-        console.log(services)
+       
         res.status(200).json(services);
     }catch(error){
         console.log("error in service route")
@@ -341,6 +363,18 @@ app.put('/api/admin/doctors/:id', async (req, res) => {
         res.status(400).json({ message: error.message });
     }
 });
+
+app.get('/api/user/doctors/:id', async (req, res) => {
+    const doctor_id = req.params.id;
+    try {
+        const Doctor = await doctorModel.findById(doctor_id);
+        console.log(Doctor)
+        res.json(Doctor);
+    } catch (error) {
+        res.status(400).json({ message: error.message });
+    }
+});
+
 
 app.post('/api/admin/doctor', async (req, res) => {
     try {
@@ -853,6 +887,9 @@ app.get('/api/admin/appointments/:doctor_id', async (req, res) => {
 });
 
 
+
+
+
 app.post('/api/doctor/prescriptions', async (req, res) => {
     const { user_id, doctor_id, medicines ,pre_url} = req.body;
 
@@ -905,6 +942,34 @@ app.get('/api/doctor/:doctorId', async (req, res) => {
     }
 });
 
+app.get('/api/user/prescriptions/:id', async (req, res) => {
+    try {
+        const  user_id  = req.params.id;
+        console.log("Pres "+user_id)
+        // Fetch prescriptions based on user ID
+        const prescriptions = await prescriptionModel.find({ user_id:user_id });
+        console.log("no prescription"+ prescriptions)
+        if (prescriptions.length === 0) {
+            return res.status(200).json({ message: 'No prescriptions found for this user' });
+        }
+        console.log(prescriptions)
+        res.status(200).json(prescriptions);
+    } catch (error) {
+        console.error("Error fetching prescriptions: ", error);
+        res.status(500).json({ message: 'Server error' });
+    }
+});
+
+app.get('/api/admin/appointments', async (req, res) => {
+    
+    try {
+     const result = await appointmentModel.find();
+        res.status(200).json(result);
+    } catch (error) {
+        console.error("Error saving prescription:", error);
+        res.status(400).json({ error: "Error saving prescription" });
+    }
+});
 
 app.listen(port, () => {
     console.log(`Server is running on port ${port}`);

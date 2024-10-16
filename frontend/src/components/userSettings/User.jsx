@@ -14,7 +14,7 @@ const User = () => {
         } else {
             fetchUserData(token);
         }
-    }, [navigate,user]);
+    }, [navigate]);
 
     const fetchUserData = async (token) => {
         try {
@@ -50,6 +50,22 @@ const User = () => {
         navigate(`/account/${user._id}`, { state: { user } });
     };
 
+    const handleAppointmentsClick = () => {
+        setDropdownOpen(false);
+        navigate(`/appointments/${user._id}`, { state: { user } }); 
+    };
+
+    const handlabReportClick = () => {
+        setDropdownOpen(false);
+        navigate(`/labreports/${user._id}`, { state: { user } }); 
+    };
+
+
+    const handlePrescriptionsClick = () => {
+        setDropdownOpen(false);
+        navigate(`/prescriptions/${user._id}`, { state: { user } }); 
+    };
+
     useEffect(() => {
         const handleClickOutside = (event) => {
             if (!event.target.closest('.profile-dropdown')) {
@@ -64,20 +80,18 @@ const User = () => {
         return () => {
             document.removeEventListener('click', handleClickOutside);
         };
-    }, [isDropdownOpen,navigate]);
+    }, [isDropdownOpen, navigate]);
 
     return (
         <div className="profile-dropdown">
-             <div>
+            <div>
                 {user ? (
-                 
-                        <img
+                    <img
                         src={user.user_url || 'https://via.placeholder.com/150'}
                         alt={`${user.fname} ${user.lname}`}
                         className="w-12 h-12 rounded-full cursor-pointer"
                         onClick={handleProfileClick}
                     />
-                   
                 ) : (
                     <img
                         src='https://via.placeholder.com/150'
@@ -105,6 +119,26 @@ const User = () => {
                         </li>
                         <li
                             className="py-2 px-4 hover:bg-gray-200 cursor-pointer"
+                            onClick={handleAppointmentsClick} // New Appointments section
+                        >
+                            Appointments And Services
+                        </li>
+                        <li
+                            className="py-2 px-4 hover:bg-gray-200 cursor-pointer"
+                            onClick={handlePrescriptionsClick} 
+                        >
+                            Prescriptions
+                        </li>
+
+                        <li
+                            className="py-2 px-4 hover:bg-gray-200 cursor-pointer"
+                            onClick={handlabReportClick} 
+                        >
+                            LabReports
+                        </li>
+
+                        <li
+                            className="py-2 px-4 hover:bg-gray-200 cursor-pointer"
                             onClick={handleLogout}
                         >
                             Logout
@@ -114,6 +148,6 @@ const User = () => {
             )}
         </div>
     );
-}    
+}
 
 export default User;
