@@ -56,7 +56,7 @@ export const AdminLogIn = () => {
             className="border p-2 w-full"
           />
         </div>
-        <div className="mb-4">
+        {/* <div className="mb-4">
           <select
             value={role}
             onChange={(e) => setRole(e.target.value)}
@@ -66,7 +66,7 @@ export const AdminLogIn = () => {
             <option value="staff">Staff</option>
             <option value="doctor">Doctor</option>
           </select>
-        </div>
+        </div> */}
         <button type="submit" className="bg-blue-500 text-white p-2 w-full">
           Login
         </button>

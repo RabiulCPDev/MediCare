@@ -5,7 +5,7 @@ export const SuperAdminRegister = () => {
     const [username, setUsername] = useState("");
     const [password, setPassword] = useState("");
     const [role, setRole] = useState(""); 
-    const [adminId, setAdminId] = useState(""); // Manual admin_id input
+    const [adminId, setAdminId] = useState(""); 
     const [error, setError] = useState(null);
     const [success, setSuccess] = useState(false);
 
@@ -79,7 +79,7 @@ export const SuperAdminRegister = () => {
                         <option value="">Select Role</option>
                         <option value="doctor">Doctor</option>
                         <option value="staff">Staff</option>
-                        <option value="superAdmin">Super Admin</option>
+                        <option value="admin">Admin</option>
                     </select>
                 </div>
                 <button type="submit" className="bg-blue-500 text-white p-2 w-full rounded">

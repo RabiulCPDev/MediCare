@@ -38,13 +38,7 @@ app.get('/api/user/data', Authentication, async (req, res) => {
        
         const userId = req.user.id;
 
-        const user = await userModel.findById(userId).select('-password');
-
-        if (!user) {
-            console.log("User not found");
-            return res.status(404).json({ message: 'User not found' });
-        }
-        
+        const user = await userModel.findById(userId).select('-password'); 
         res.status(200).json({ user });
     } catch (error) {
         console.error('Error fetching user profile:', error.message);
@@ -78,13 +72,7 @@ app.put('/api/user/removeProfileImage/:id', async (req, res) => {
 
 app.get('/api/admin/users', async (req, res) => {
     try {
-        const users = await userModel.find();
-
-        if (!users || users.length === 0) {
-            console.log("Users not found");
-            return res.status(404).json({ message: 'Users not found' });
-        }
-        
+        const users = await userModel.find();     
         res.status(200).json(users); 
     } catch (error) {
         console.error('Error fetching users:', error.message);
@@ -95,12 +83,6 @@ app.get('/api/admin/users', async (req, res) => {
 app.get('/api/admin/staffs', async (req, res) => {
     try {
         const users = await staffModel.find();
-
-        if (!users || users.length === 0) {
-            console.log("Users not found");
-            return res.status(404).json({ message: 'Users not found' });
-        }
-        
         res.status(200).json(users); 
     } catch (error) {
         console.error('Error fetching users:', error.message);
@@ -981,22 +963,22 @@ app.get('/api/admin/appointments', async (req, res) => {
 app.post('/api/labreports', async (req, res) => {
     const { doctor_name, user_id, technician_id, test, date } = req.body;
 
-    // Ensure required fields are provided
+   
     if (!doctor_name || !user_id || !test || !test.length) {
         return res.status(400).json({ error: 'Missing required fields' });
     }
 
     try {
-        // Create a new lab report document
+       
         const newLabReport = new labreportModel({
             doctor_name,
             user_id,
             technician_id,
             test,
-            date: date || Date.now() // Use current date if no date provided
+            date: date || Date.now() 
         });
 
-        // Save the lab report to the database
+       
         await newLabReport.save();
 
         res.status(201).json({ message: 'Lab report created successfully', labReport: newLabReport });
@@ -1020,7 +1002,6 @@ app.get('/api/labreports/user/:userId', async (req, res) => {
 app.get('/api/technician/labtests', async (req, res) => {
    
     try {
-        // Assuming you have a method to find lab tests by technician ID
         const labTests = await labreportModel.find({status:false});
 
         res.status(200).json(labTests);
@@ -1031,41 +1012,41 @@ app.get('/api/technician/labtests', async (req, res) => {
 });
 
 app.get('/api/technician/labtests/:Id', async (req, res) => {
-    const id = req.params.Id; // Get the lab test ID from the URL parameters
+    const id = req.params.Id; 
     try {
-        const labTest = await labreportModel.findById(id); // Fetch the lab test by ID
+        const labTest = await labreportModel.findById(id); 
 
         console.log(labTest)
-        res.status(200).json(labTest); // Return the found lab test
+        res.status(200).json(labTest); 
     } catch (error) {
-        console.error('Error fetching lab test:', error); // Log the error for debugging
-        res.status(500).json({ error: 'An error occurred while fetching lab tests.' }); // Handle server error
+        console.error('Error fetching lab test:', error); 
+        res.status(500).json({ error: 'An error occurred while fetching lab tests.' }); 
     }
 });
 
 
 app.put('/api/technician/labtests/:Id', async (req, res) => {
-    const id = req.params.Id; // Get the lab report ID from the URL parameters
-    const { technician_id, test } = req.body; // Destructure technician_id and test from request body
+    const id = req.params.Id; 
+    const { technician_id, test } = req.body;
 
     try {
         const updatedReport = await labreportModel.findByIdAndUpdate(
             id,
             {
-                technician_id: technician_id, // Update technician ID
-                test: test, // Update test results
-                status: true, // Mark report as completed
+                technician_id: technician_id, 
+                test: test, 
+                status: true, 
             },
-            { new: true } // Return the updated document
+            { new: true } 
         );
 
         if (!updatedReport) {
             return res.status(404).json({ error: 'Lab report not found' });
         }
 
-        return res.status(200).json(updatedReport); // Return the updated report
+        return res.status(200).json(updatedReport);
     } catch (error) {
-        console.error(error); // Log the error for debugging
+        console.error(error); 
         return res.status(500).json({ error: 'Failed to update lab report' });
     }
 });

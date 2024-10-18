@@ -19,7 +19,7 @@ export const DoctorGrid = () => {
     }, []);
 
     return (
-        <div className="gap-4 grid grid-cols-1 sm:grid-cols-1 md:grid-cols-3 lg:grid-cols-4 px-4 sm:px-6 md:px-8 lg:px-14 my-3 justify-center">
+        <div className="gap-4 grid grid-cols-1 sm:grid-cols-1 md:grid-cols-3 lg:grid-cols-3 px-4 sm:px-6 md:px-8 lg:px-14 my-3 justify-center">
             {doctor && doctor.length > 0 ? (
                 doctor.map((doc, index) => (
                     <DoctorCard key={index} doctor={doc} />

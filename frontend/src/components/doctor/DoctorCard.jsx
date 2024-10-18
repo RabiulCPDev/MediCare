@@ -12,9 +12,9 @@ export const DoctorCard = ({ doctor }) => {
 
     return (
         <div>
-            <div className="max-w-3xl h-[400px] flex flex-col items-center justify-center mx-auto bg-white shadow-lg rounded-lg overflow-hidden p-4">
-                <div className="h-40 w-40 rounded-full shadow-xl">
-                    <img src={doctor.url} alt="not found" className="rounded-full shadow-xl" />
+            <div className="max-w-3xl h-[410px] mb-2 mt-4 flex flex-col items-center justify-center mx-auto bg-white shadow-lg rounded-lg overflow-hidden p-4">
+                <div className="h-40 w-40 rounded-full shadow-xl mb-2">
+                    <img src={doctor.url} alt="not found" className="rounded-full h-40 w-40 shadow-xl" />
                 </div>
                 <div className="flex flex-col justify-center">
                     <span className="text-xl font-semibold text-center">{doctor.fname} {doctor.lname}</span>

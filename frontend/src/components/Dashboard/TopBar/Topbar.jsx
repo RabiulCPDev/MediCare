@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from 'react'; 
 import { Link } from 'react-router-dom';
-
-export const Topbar = ({setActiveSection}) => {
+import adminAvatar from '../../../assets/adminAvatar.avif'
+export const Topbar = ({setActiveSection,role}) => {
     const [isDropdownOpen, setIsDropdownOpen] = useState(false);
     const dropdownRef = useRef(null); 
 
@@ -28,17 +28,17 @@ export const Topbar = ({setActiveSection}) => {
                                 setIsDropdownOpen(false);
                                 setActiveSection('default')
                             }}>
-             <h1 className="text-2xl font-semibold">Admin Dashboard</h1>
+             <h1 className="text-2xl font-semibold">{role} Dashboard</h1>
            </Link>
             
             <div className="relative flex items-center" ref={dropdownRef}>
                 <img
-                    src="https://via.placeholder.com/40"
+                    src={adminAvatar}
                     alt="Admin"
-                    className="rounded-full w-10 h-10 cursor-pointer"
+                    className="rounded-full w-10 h-10 cursor-pointer mr-5"
                     onClick={toggleDropdown}
                 />
-                <span className="ml-2 cursor-pointer" onClick={toggleDropdown}>Admin</span>
+                {/* <span className="ml-2 cursor-pointer" onClick={toggleDropdown}>Admin</span> */}
 
                 {isDropdownOpen && (
                     <div className="absolute right-0 top-12 mt-2 w-48 bg-white border rounded-md shadow-lg z-10">
@@ -51,7 +51,7 @@ export const Topbar = ({setActiveSection}) => {
                         >
                             Account Details
                         </div>
-                        <div
+                        {/* <div
                             className="px-4 py-2 text-gray-800 hover:bg-gray-100 cursor-pointer"
                             onClick={() => {
                                 setIsDropdownOpen(false);
@@ -59,12 +59,12 @@ export const Topbar = ({setActiveSection}) => {
                             }}
                         >
                             Update Profile
-                        </div>
+                        </div> */}
                         <div className="px-4 py-2 text-red-600 hover:bg-gray-100 cursor-pointer">
                             <span onClick={() => {
                                 sessionStorage.removeItem('adminToken');
                                 alert('Logged out successfully.');
-                                window.location.href = '/';
+                                window.location.href = '/admin';
                             }}>Logout</span>
                         </div>
                     </div>

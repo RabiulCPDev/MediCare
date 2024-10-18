@@ -26,13 +26,14 @@ export const Dashboard = () => {
         services: 0,
         departments: 0,
         appointments: 0,
+        labreports:0,
     });
     const [error, setError] = useState('');
 
     useEffect(() => {
         if (!token) {
-            navigate('/');
-            return; // Exit if no token
+            navigate('/admin');
+            return;
         }
 
         const fetchAdminRole = async () => {
@@ -57,9 +58,9 @@ export const Dashboard = () => {
                 const staffRes = await axios.get('http://localhost:5000/api/admin/staffs');
                 const serviceRes = await axios.get('http://localhost:5000/api/admin/services');
                 const departmentRes = await axios.get('http://localhost:5000/api/admin/departments');
-
                 const appointmentRes = await axios.get(`http://localhost:5000/api/admin/appointments/${doctorId}`);
-
+                const labReportRes =await axios.get('http://localhost:5000/api/technician/labtests');
+               
                 setStats({
                     doctors: doctorRes.data.length,
                     users: userRes.data.length,
@@ -67,6 +68,7 @@ export const Dashboard = () => {
                     services: serviceRes.data.length,
                     departments: departmentRes.data.length,
                     appointments: appointmentRes.data.length,
+                    labreports:labReportRes.data.length,
                 });
             } catch (error) {
                 console.error('Error fetching stats:', error);
@@ -76,7 +78,7 @@ export const Dashboard = () => {
 
         fetchAdminRole();
         fetchStats();
-    }, [navigate, token, doctorId]); // Add doctorId as dependency to refetch stats when it changes
+    }, [navigate, token, doctorId]); // Add doctorId as dependency to refetch
 
     const renderSection = () => {
         switch (activeSection) {
@@ -141,7 +143,7 @@ export const Dashboard = () => {
                         {adminRole === 'staff' && (
                             <Card
                                 title="Create Lab Report"
-                                count={stats.appointments}
+                                count={stats.labreports}
                                 onClick={() => setActiveSection('labReport')}
                             />
                         )}
@@ -154,11 +156,14 @@ export const Dashboard = () => {
     return (
         <div className="flex flex-col min-h-screen">
             <div className="flex flex-1">
-                <div className="w-64 bg-white border-r">
+                {adminRole==='admin' &&(
+                    <div className="w-64 bg-white border-r">
                     <Sidebar setActiveSection={setActiveSection} />
                 </div>
+                )
+                }
                 <div className="flex-1 flex flex-col">
-                    <Topbar setActiveSection={setActiveSection} />
+                    <Topbar setActiveSection={setActiveSection}role={adminRole} />
                     <div className="p-6 bg-gray-100 flex-grow">
                         {error && <div className="text-red-500">{error}</div>}
                         {renderSection()}

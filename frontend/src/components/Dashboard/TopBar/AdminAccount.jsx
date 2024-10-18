@@ -34,9 +34,11 @@ export const AdminAccount = () => {
     }
 
     return (
-        <div className="p-6 bg-white shadow-md rounded-md max-w-lg mx-auto mt-8">
-            <h2 className="text-2xl font-bold mb-4">Admin Account Details</h2>
-            <p><strong>Username:</strong> {adminDetails.username}</p>
+        <div className="p-6 bg-white shadow-md justify-center rounded-md max-w-lg mx-auto mt-8">
+            <h2 className="text-2xl text-center font-bold mb-4">Admin Account Details</h2>
+            <p><strong>Username :</strong> {adminDetails.username}</p>
+            <p><strong>ID :</strong> {adminDetails.admin_id}</p>
+            <p><strong>Role :</strong> {adminDetails.role}</p>
         </div>
     );
 };

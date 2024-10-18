@@ -19,7 +19,7 @@ export const DepartmentGrid = ({rows}) => {
 
   
   return (
-    <div className="gap-2 grid sm:grid-cols-1 md:grid-cols-3 px-14 my-4 justify-center">
+    <div className="gap-4 grid sm:grid-cols-1 md:grid-cols-3 px-14 my-4 justify-center">
       {departments.length > 0 ? (
         departments.map((dep, index) => (
           <DepartmentCard key={index} departments={dep} />
