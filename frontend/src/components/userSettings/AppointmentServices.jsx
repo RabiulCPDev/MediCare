@@ -57,7 +57,7 @@ export const AppointmentServices = () => {
                     <tbody>
                         {appointments.map((ap, index) => (
                             <tr key={index}>
-                                <td className="py-2 px-4 border border-gray-300">{ap.doctorName}</td>
+                                <td className="py-2 px-4 border border-gray-300">{ap.doctor_name}</td>
                                 <td className="py-2 px-4 border border-gray-300">
                                     {`${ap.app_time} - ${new Date(ap.app_date).toLocaleDateString()}`}
                                 </td>
@@ -72,7 +72,7 @@ export const AppointmentServices = () => {
             {services.length > 0 && (
                 <div className="mt-8">
                     <h3 className="text-xl font-semibold">Services</h3>
-                    <ul className="list-disc list-inside">
+                    <ul className="list-none list-inside">
                         {services.map((service, index) => (
                             <li key={index}>{`${service.name} - ${service.fee}`}</li>
                         ))}

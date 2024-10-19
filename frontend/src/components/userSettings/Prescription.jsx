@@ -79,7 +79,7 @@ export const Prescription = () => {
         <div className="max-w-3xl mx-auto bg-white shadow-lg rounded-lg overflow-hidden p-4 mt-4">
             <h3 className="text-xl font-semibold mb-4">Prescriptions</h3>
             {prescriptions.length > 0 ? (
-                <ul className="list-disc list-inside">
+                <ul className="list-none list-inside">
                     {prescriptions.map((prescription, index) => (
                         <li key={index} className="py-2 border-b">
                             {/* Display only the prescription date */}

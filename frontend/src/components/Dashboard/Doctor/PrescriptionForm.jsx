@@ -47,10 +47,10 @@ export const PrescriptionForm = ({ userId, doctorId, appointmentId, onPrescripti
 
     return (
         <form onSubmit={handleSubmit}>
-            <h2>Prescription</h2>
+            <h2 className='text-2xl '>Prescription</h2>
 
             {medicines.map((prescription, index) => (
-                <div key={index} className="medicine-entry">
+                <div key={index} className="medicine-entry rounded-md">
                     <input
                         type="text"
                         placeholder="Medicine and dosage (e.g. Aspirin 500mg)"
@@ -61,11 +61,11 @@ export const PrescriptionForm = ({ userId, doctorId, appointmentId, onPrescripti
                 </div>
             ))}
 
-            <button type="button" onClick={addMedicineField}>
-                Add More Medicine
+            <button type="button" className='bg-green-300 p-3 m-1 rounded-lg shadow-sm' onClick={addMedicineField}>
+                Add Medicine
             </button>
 
-            <button className='p-2 bg-green-300 rounded-sm' type="submit">Save Prescription</button>
+            <button className='p-2 bg-blue-500 p-3 m-1 rounded-lg' type="submit">Save Prescription</button>
         </form>
     );
 };

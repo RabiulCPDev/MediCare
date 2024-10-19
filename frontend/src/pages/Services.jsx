@@ -9,7 +9,7 @@ export const Services = ()=>{
                     <h1 className="text-4xl text-gray-900 font-semibold text-center">Our Services</h1>
                 </div>
 
-                <div>
+                <div className='md:m-8'>
                      <ServiceGrid/>
                 </div>
 

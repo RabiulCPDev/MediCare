@@ -75,7 +75,7 @@ const DoctorAppointments = ({ doctorId }) => {
             {/* Render the PrescriptionForm if a current appointment is selected */}
             {currentAppointment && (
                 <div className="mt-4">
-                    <h3 className="text-xl font-semibold mb-2">Add Prescription for Appointment {currentAppointment._id}</h3>
+                    <h3 className="text-xl  font-semibold mb-2">Add Prescription</h3>
                     <PrescriptionForm
                         doctorId={doctorId}
                         userId={currentAppointment.user_id} // Pass userId from the appointment
