@@ -8,12 +8,12 @@ export const DepartmentCard = ({ departments }) => {
   };
 
   return (
-    <div className="flex flex-col mb-4 sm:mb-4 h-auto bg-white p-4 mt-4 mx-auto w-full sm:w-80 md:w-96 lg:w-[380px] shadow-lg rounded-lg transition-transform duration-200 hover:shadow-xl hover:scale-105">
+    <div className="flex flex-col mb-4 h-auto bg-white p-4 mt-4 mx-auto w-full sm:w-72 md:w-80 lg:w-[380px] shadow-lg rounded-lg transition-transform duration-200 hover:shadow-xl hover:scale-105">
       <div>
         <img
           className="w-full h-48 sm:h-48 md:h-56 lg:h-64 mx-auto rounded-lg mb-2 shadow-lg object-cover"
           src={departments.url}
-          alt="Department Picture"
+          alt={departments.name} // Updated to use the department name directly
         />
       </div>
 
@@ -24,7 +24,7 @@ export const DepartmentCard = ({ departments }) => {
 
         <button
           onClick={ReadMore}
-          className="mt-2 border bg-blue-400 text-white rounded-lg p-2 sm:p-3 transition duration-200 hover:bg-blue-500"
+          className="mt-2 border bg-blue-400 text-white rounded-lg p-2 sm:p-3 md:p-3 lg:p-3 transition duration-200 hover:bg-blue-500"
         >
           Read More
         </button>
