@@ -19,7 +19,7 @@ export const ServiceGrid = () => {
     };
 
     return (
-        <div className="gap-4 grid grid-cols-1 sm:grid-cols-1 md:grid-cols-3 lg:grid-cols-3 px-4 sm:px-6 md:px-8 lg:px-14 my-4 justify-center">
+        <div className="gap-6 grid grid-cols-1 sm:grid-cols-1 md:grid-cols-3 lg:grid-cols-3 sm:px-6 md:px-2 lg:px-2 my-4 justify-center">
             {services.length > 0 ? (
                 services.map((service, index) => (
                     <ServiceCard key={index} services={service} />
